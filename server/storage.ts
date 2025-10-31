@@ -11,7 +11,15 @@ import {
   type InsertEmailSubscriber
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, gte, lte } from "drizzle-orm";
+import { eq, desc, and, gte, lte, inArray, sql } from "drizzle-orm";
+
+export type WarnNoticeFilters = {
+  dateFrom?: string;
+  dateTo?: string;
+  industries?: string[];
+  minWorkers?: number;
+  maxWorkers?: number;
+};
 
 export interface IStorage {
   // User methods (keeping for compatibility)
@@ -21,9 +29,12 @@ export interface IStorage {
 
   // WARN Notice methods
   getAllWarnNotices(): Promise<WarnNotice[]>;
+  getFilteredWarnNotices(filters: WarnNoticeFilters): Promise<WarnNotice[]>;
   getWarnNoticesByState(state: string): Promise<WarnNotice[]>;
+  getWarnNoticesByCompany(companyName: string): Promise<WarnNotice[]>;
   getWarnNoticeById(id: string): Promise<WarnNotice | undefined>;
   createWarnNotice(notice: InsertWarnNotice): Promise<WarnNotice>;
+  getUniqueCompanies(): Promise<string[]>;
 
   // Email Subscriber methods
   createEmailSubscriber(subscriber: InsertEmailSubscriber): Promise<EmailSubscriber>;
@@ -55,6 +66,40 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(warnNotices).orderBy(desc(warnNotices.filingDate));
   }
 
+  async getFilteredWarnNotices(filters: WarnNoticeFilters): Promise<WarnNotice[]> {
+    const conditions = [];
+
+    if (filters.dateFrom) {
+      conditions.push(gte(warnNotices.filingDate, filters.dateFrom));
+    }
+
+    if (filters.dateTo) {
+      conditions.push(lte(warnNotices.filingDate, filters.dateTo));
+    }
+
+    if (filters.industries && filters.industries.length > 0) {
+      conditions.push(inArray(warnNotices.industry, filters.industries));
+    }
+
+    if (filters.minWorkers !== undefined) {
+      conditions.push(gte(warnNotices.workersAffected, filters.minWorkers));
+    }
+
+    if (filters.maxWorkers !== undefined) {
+      conditions.push(lte(warnNotices.workersAffected, filters.maxWorkers));
+    }
+
+    if (conditions.length === 0) {
+      return await this.getAllWarnNotices();
+    }
+
+    return await db
+      .select()
+      .from(warnNotices)
+      .where(and(...conditions))
+      .orderBy(desc(warnNotices.filingDate));
+  }
+
   async getWarnNoticesByState(state: string): Promise<WarnNotice[]> {
     return await db
       .select()
@@ -68,12 +113,29 @@ export class DatabaseStorage implements IStorage {
     return notice || undefined;
   }
 
+  async getWarnNoticesByCompany(companyName: string): Promise<WarnNotice[]> {
+    return await db
+      .select()
+      .from(warnNotices)
+      .where(eq(warnNotices.companyName, companyName))
+      .orderBy(desc(warnNotices.filingDate));
+  }
+
   async createWarnNotice(insertNotice: InsertWarnNotice): Promise<WarnNotice> {
     const [notice] = await db
       .insert(warnNotices)
       .values(insertNotice)
       .returning();
     return notice;
+  }
+
+  async getUniqueCompanies(): Promise<string[]> {
+    const result = await db
+      .selectDistinct({ companyName: warnNotices.companyName })
+      .from(warnNotices)
+      .orderBy(warnNotices.companyName);
+    
+    return result.map(r => r.companyName);
   }
 
   // Email Subscriber methods

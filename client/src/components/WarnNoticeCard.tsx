@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, Users, Building2 } from "lucide-react";
@@ -17,9 +18,11 @@ export default function WarnNoticeCard({ notice }: WarnNoticeCardProps) {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-semibold truncate text-card-foreground" data-testid={`text-company-${notice.id}`}>
-              {notice.companyName}
-            </h3>
+            <Link href={`/company/${encodeURIComponent(notice.companyName)}`}>
+              <h3 className="text-lg font-semibold truncate text-card-foreground hover:text-primary transition-colors cursor-pointer" data-testid={`text-company-${notice.id}`}>
+                {notice.companyName}
+              </h3>
+            </Link>
             <div className="flex items-center gap-1.5 mt-1 text-sm text-muted-foreground">
               <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
               <span className="truncate" data-testid={`text-location-${notice.id}`}>

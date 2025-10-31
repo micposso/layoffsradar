@@ -6,10 +6,38 @@ import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Get all WARN notices
+  // Get all WARN notices (with optional filters)
   app.get("/api/notices", async (req, res) => {
     try {
-      const notices = await storage.getAllWarnNotices();
+      const { dateFrom, dateTo, industries, minWorkers, maxWorkers } = req.query;
+
+      const filters: any = {};
+
+      if (dateFrom && typeof dateFrom === "string") {
+        filters.dateFrom = dateFrom;
+      }
+
+      if (dateTo && typeof dateTo === "string") {
+        filters.dateTo = dateTo;
+      }
+
+      if (industries) {
+        filters.industries = Array.isArray(industries) ? industries : [industries];
+      }
+
+      if (minWorkers && typeof minWorkers === "string") {
+        filters.minWorkers = parseInt(minWorkers, 10);
+      }
+
+      if (maxWorkers && typeof maxWorkers === "string") {
+        filters.maxWorkers = parseInt(maxWorkers, 10);
+      }
+
+      const hasFilters = Object.keys(filters).length > 0;
+      const notices = hasFilters
+        ? await storage.getFilteredWarnNotices(filters)
+        : await storage.getAllWarnNotices();
+
       res.json(notices);
     } catch (error) {
       console.error("Error fetching notices:", error);
@@ -96,6 +124,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching stats:", error);
       res.status(500).json({ message: "Failed to fetch statistics" });
+    }
+  });
+
+  // Get all unique companies
+  app.get("/api/companies", async (req, res) => {
+    try {
+      const companies = await storage.getUniqueCompanies();
+      res.json(companies);
+    } catch (error) {
+      console.error("Error fetching companies:", error);
+      res.status(500).json({ message: "Failed to fetch companies" });
+    }
+  });
+
+  // Get notices by company
+  app.get("/api/companies/:companyName", async (req, res) => {
+    try {
+      const { companyName } = req.params;
+      const notices = await storage.getWarnNoticesByCompany(decodeURIComponent(companyName));
+      res.json(notices);
+    } catch (error) {
+      console.error("Error fetching company notices:", error);
+      res.status(500).json({ message: "Failed to fetch company notices" });
+    }
+  });
+
+  // Get analytics data
+  app.get("/api/analytics", async (req, res) => {
+    try {
+      const notices = await storage.getAllWarnNotices();
+
+      // Group by month
+      const monthlyData = notices.reduce((acc, notice) => {
+        const date = new Date(notice.filingDate);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+        
+        if (!acc[monthKey]) {
+          acc[monthKey] = { month: monthKey, notices: 0, workers: 0 };
+        }
+        acc[monthKey].notices++;
+        acc[monthKey].workers += notice.workersAffected;
+        return acc;
+      }, {} as Record<string, { month: string; notices: number; workers: number }>);
+
+      const timelineData = Object.values(monthlyData).sort((a, b) => a.month.localeCompare(b.month));
+
+      // Group by state (top 10)
+      const stateData = notices.reduce((acc, notice) => {
+        if (!acc[notice.state]) {
+          acc[notice.state] = { state: notice.state, notices: 0, workers: 0 };
+        }
+        acc[notice.state].notices++;
+        acc[notice.state].workers += notice.workersAffected;
+        return acc;
+      }, {} as Record<string, { state: string; notices: number; workers: number }>);
+
+      const topStates = Object.values(stateData)
+        .sort((a, b) => b.workers - a.workers)
+        .slice(0, 10);
+
+      // Group by industry
+      const industryData = notices.reduce((acc, notice) => {
+        const industry = notice.industry || "Unknown";
+        if (!acc[industry]) {
+          acc[industry] = { industry, count: 0, workers: 0 };
+        }
+        acc[industry].count++;
+        acc[industry].workers += notice.workersAffected;
+        return acc;
+      }, {} as Record<string, { industry: string; count: number; workers: number }>);
+
+      const industries = Object.values(industryData)
+        .sort((a, b) => b.workers - a.workers);
+
+      res.json({
+        timeline: timelineData,
+        byState: topStates,
+        byIndustry: industries,
+      });
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+      res.status(500).json({ message: "Failed to fetch analytics data" });
     }
   });
 
