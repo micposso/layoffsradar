@@ -75,8 +75,8 @@ export default function AllNotices() {
       <main className="flex-1">
         <div className="py-8 border-b bg-muted/30">
           <div className="container px-4 mx-auto md:px-6 lg:px-8">
-            <h1 className="mb-2 text-3xl font-bold md:text-4xl">All WARN Notices</h1>
-            <p className="text-lg text-muted-foreground">
+            <h1 className="mb-2 text-3xl font-bold md:text-4xl" data-testid="heading-all-notices">All WARN Notices</h1>
+            <p className="text-lg text-muted-foreground" data-testid="text-all-notices-description">
               Search and filter through all employment layoff notifications
             </p>
           </div>
@@ -126,7 +126,7 @@ export default function AllNotices() {
             </div>
           </div>
 
-          <div className="mb-4 text-sm text-muted-foreground">
+          <div className="mb-4 text-sm text-muted-foreground" data-testid="text-results-count">
             Showing {filteredNotices.length} of {notices.length} notices
           </div>
 
@@ -140,9 +140,9 @@ export default function AllNotices() {
               ))}
             </div>
           ) : filteredNotices.length === 0 ? (
-            <div className="py-16 text-center">
+            <div className="py-16 text-center" data-testid="empty-state-search">
               <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="mb-2 text-lg font-semibold">No notices found</h3>
+              <h3 className="mb-2 text-lg font-semibold" data-testid="text-no-results">No notices found</h3>
               <p className="text-muted-foreground">
                 {searchQuery || selectedState !== "all"
                   ? "Try adjusting your search or filters"

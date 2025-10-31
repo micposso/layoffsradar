@@ -45,10 +45,10 @@ export default function Home() {
         <section className="py-12 md:py-16 lg:py-20 bg-gradient-to-b from-background to-muted/20">
           <div className="container px-4 mx-auto md:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto mb-12 text-center">
-              <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+              <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl" data-testid="heading-main">
                 WARN Layoff Tracker
               </h1>
-              <p className="text-lg text-muted-foreground md:text-xl">
+              <p className="text-lg text-muted-foreground md:text-xl" data-testid="text-hero-description">
                 Track employment layoff notices across the United States in real-time.
                 Stay informed about workforce adjustments and company closures.
               </p>
@@ -64,10 +64,10 @@ export default function Home() {
           <div className="container px-4 mx-auto md:px-6 lg:px-8">
             <div className="max-w-2xl mx-auto">
               <div className="mb-6 text-center">
-                <h2 className="mb-2 text-2xl font-semibold md:text-3xl">
+                <h2 className="mb-2 text-2xl font-semibold md:text-3xl" data-testid="heading-subscribe">
                   Stay Updated
                 </h2>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground" data-testid="text-subscribe-description">
                   Subscribe to receive weekly email notifications about new WARN notices
                 </p>
               </div>
@@ -111,13 +111,13 @@ export default function Home() {
           <div className="container px-4 mx-auto md:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h2 className="mb-2 text-3xl font-bold">Latest WARN Notices</h2>
-                <p className="text-muted-foreground">
+                <h2 className="mb-2 text-3xl font-bold" data-testid="heading-latest-notices">Latest WARN Notices</h2>
+                <p className="text-muted-foreground" data-testid="text-latest-description">
                   Most recent employment layoff notifications filed
                 </p>
               </div>
               <Link href="/notices">
-                <Button variant="outline" data-testid="button-view-all">
+                <Button variant="outline" data-testid="button-view-all-notices">
                   View All
                 </Button>
               </Link>
@@ -133,7 +133,7 @@ export default function Home() {
                 ))}
               </div>
             ) : latestNotices.length === 0 ? (
-              <div className="py-16 text-center">
+              <div className="py-16 text-center" data-testid="empty-state-notices">
                 <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                 <h3 className="mb-2 text-lg font-semibold">No notices yet</h3>
                 <p className="text-muted-foreground">

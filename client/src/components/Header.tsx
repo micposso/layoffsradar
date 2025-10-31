@@ -17,7 +17,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex items-center justify-between h-16 px-4 mx-auto md:px-6 lg:px-8">
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2 hover-elevate">
+          <Link href="/" className="flex items-center gap-2 hover-elevate" data-testid="link-logo">
             <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary text-primary-foreground">
               <span className="text-lg font-bold">W</span>
             </div>

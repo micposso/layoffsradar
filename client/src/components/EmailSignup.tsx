@@ -56,11 +56,11 @@ export default function EmailSignup() {
 
   if (isSuccess) {
     return (
-      <div className="flex items-center justify-center gap-3 p-6 rounded-lg bg-muted/50">
+      <div className="flex items-center justify-center gap-3 p-6 rounded-lg bg-muted/50" data-testid="success-message-subscribe">
         <CheckCircle2 className="w-6 h-6 text-green-600" />
         <div>
-          <div className="font-semibold">Successfully subscribed!</div>
-          <div className="text-sm text-muted-foreground">
+          <div className="font-semibold" data-testid="text-success-title">Successfully subscribed!</div>
+          <div className="text-sm text-muted-foreground" data-testid="text-success-description">
             Check your email for confirmation.
           </div>
         </div>
@@ -102,7 +102,7 @@ export default function EmailSignup() {
           </Button>
         </form>
       </Form>
-      <p className="mt-3 text-sm text-muted-foreground">
+      <p className="mt-3 text-sm text-muted-foreground" data-testid="text-privacy-notice">
         Get weekly email updates about new WARN layoff notices. Unsubscribe anytime.
       </p>
     </div>

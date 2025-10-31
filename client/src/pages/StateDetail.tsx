@@ -25,11 +25,14 @@ export default function StateDetail() {
   const stateCode = params?.state?.toUpperCase() || "";
   const stateName = stateNames[stateCode] || stateCode;
 
-  const { data: notices = [], isLoading } = useQuery<WarnNotice[]>({
+  const { data: stateNotices = [], isLoading } = useQuery<WarnNotice[]>({
     queryKey: ["/api/notices", stateCode],
+    queryFn: async () => {
+      const res = await fetch(`/api/notices/${stateCode}`);
+      if (!res.ok) throw new Error("Failed to fetch notices");
+      return res.json();
+    },
   });
-
-  const stateNotices = notices.filter(n => n.state === stateCode);
   const totalWorkers = stateNotices.reduce((sum, n) => sum + n.workersAffected, 0);
 
   return (
@@ -85,9 +88,9 @@ export default function StateDetail() {
               ))}
             </div>
           ) : stateNotices.length === 0 ? (
-            <div className="py-16 text-center">
+            <div className="py-16 text-center" data-testid="empty-state-state">
               <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="mb-2 text-lg font-semibold">No notices found</h3>
+              <h3 className="mb-2 text-lg font-semibold" data-testid="text-no-state-notices">No notices found</h3>
               <p className="text-muted-foreground">
                 There are currently no WARN notices for {stateName}.
               </p>
