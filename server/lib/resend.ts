@@ -43,14 +43,14 @@ export async function sendWelcomeEmail(email: string) {
     const { client } = await getUncachableResendClient();
     
     const { data, error } = await client.emails.send({
-      from: 'WARN Layoff Tracker <updates@layoffsradar.com>',
+      from: 'LAYOFFS RADAR Alert <updates@layoffsradar.com>',
       to: [email],
-      subject: 'Welcome to WARN Layoff Tracker',
+      subject: 'Welcome to LAYOFFS RADAR',
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #1a1a1a;">Welcome to WARN Layoff Tracker</h1>
+          <h1 style="color: #1a1a1a;">Welcome to LAYOFFS RADAR</h1>
           <p style="color: #4a4a4a; line-height: 1.6;">
-            Thank you for subscribing to WARN Layoff Tracker alerts. You'll now receive notifications when new layoff notices are filed.
+            Thank you for subscribing to LAYOFFS RADAR alerts. You'll now receive notifications when new layoff notices are filed.
           </p>
           <p style="color: #4a4a4a; line-height: 1.6;">
             Our platform aggregates Worker Adjustment and Retraining Notification (WARN) Act notices from across the United States, helping you stay informed about employment changes in your area.
@@ -60,7 +60,7 @@ export async function sendWelcomeEmail(email: string) {
           </p>
           <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 32px 0;" />
           <p style="color: #8a8a8a; font-size: 12px;">
-            WARN Layoff Tracker - Tracking employment changes across America
+            LAYOFFS RADAR - Tracking employment changes across America
           </p>
         </div>
       `,
