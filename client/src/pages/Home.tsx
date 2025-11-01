@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import USMap from "@/components/USMap";
 import EmailSignup from "@/components/EmailSignup";
 import RecentCompanies from "@/components/RecentCompanies";
+import NotableLayoffs from "@/components/NotableLayoffs";
 import StatCard from "@/components/StatCard";
 import { FileText, Users, MapPin, Search, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -207,6 +208,9 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Notable Layoffs Carousel */}
+        <NotableLayoffs />
       </main>
 
       <Footer />
