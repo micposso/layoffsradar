@@ -19,14 +19,20 @@ Preferred communication style: Simple, everyday language.
 - Created company detail pages with historical trends and statistics
 - Enhanced UI/UX with interactive company links and timeline charts
 - Fixed filtering bugs: worker range initialization from dataset, effective date support
+- **Implemented Replit Auth for secure authentication**:
+  - OAuth integration supporting Google, GitHub, email/password, Apple, X
+  - Session-based authentication with PostgreSQL session storage
+  - Protected CSV import endpoint with isAuthenticated middleware
+  - User profile display in Header with avatar and logout functionality
+  - Automatic redirect to login for protected routes
 
 **CSV Import Feature:**
 - Admin import page at /admin/import for bulk uploading WARN notices
 - File upload with validation, duplicate detection, and error reporting
 - Automatically refreshes all data views after successful import
-- **Security Note**: Import endpoint is currently unprotected - suitable for internal use only
-  - For public deployment: Add authentication middleware to POST /api/notices/import
-  - Consider adding admin role checks before allowing data imports
+- **Security**: Import endpoint protected with authentication - safe for public deployment
+  - Only authenticated users can access /admin/import page
+  - CSV upload requires valid session
 
 **Email Notifications Status:**
 - Resend integration available but not configured (user dismissed setup)
@@ -69,10 +75,24 @@ The application implements a professional, data-focused design inspired by civic
 
 **API Design:**
 RESTful API with the following endpoints:
+
+*Public endpoints:*
 - `GET /api/notices` - Retrieve all WARN notices
 - `GET /api/notices/:state` - Retrieve notices filtered by state
+- `GET /api/stats` - Get aggregate statistics
+- `GET /api/analytics` - Get analytics data for dashboard
+- `GET /api/companies` - List all companies with notice counts
+- `GET /api/companies/:companyName` - Get company-specific data
 - `POST /api/notices` - Create new WARN notice (with validation)
 - `POST /api/subscribers` - Subscribe to email notifications
+
+*Authentication endpoints:*
+- `POST /api/login` - Initiate Replit OpenID Connect login
+- `GET /api/logout` - Logout and destroy session
+- `GET /api/auth/user` - Get current authenticated user (requires auth)
+
+*Protected endpoints:*
+- `POST /api/notices/import` - Bulk CSV import (requires authentication)
 
 **Request/Response Pattern:**
 - Request validation using Zod schemas from shared schema definitions
@@ -103,9 +123,16 @@ RESTful API with the following endpoints:
 - Separate from notices for clean data separation
 
 **Users Table:**
-- Authentication support structure (currently minimal usage)
-- Username/password fields with uniqueness constraints
-- Maintains compatibility with potential future auth features
+- Stores authenticated user information from Replit Auth
+- Fields: id (UUID), email (unique), firstName, lastName, profileImageUrl, createdAt, updatedAt
+- Populated automatically during OAuth login flow
+- Used for session management and user profile display
+
+**Sessions Table:**
+- PostgreSQL-backed session storage using connect-pg-simple
+- Fields: sid (session ID), sess (JSON session data), expire (timestamp)
+- Automatically managed by Express session middleware
+- Indexed on expire column for efficient cleanup
 
 **Database Rationale:**
 - Serverless PostgreSQL chosen for scalability and zero-maintenance
@@ -166,5 +193,18 @@ RESTful API with the following endpoints:
   - Optimistic updates support
   - Query invalidation strategies
 
+**Authentication:**
+- **Replit Auth**: OpenID Connect authentication provider
+  - Blueprint: `javascript_log_in_with_replit`
+  - OAuth integration with Google, GitHub, email/password, Apple, X
+  - Server-side: `openid-client`, `passport`, `express-session`
+  - Frontend: `useAuth()` hook for checking authentication status
+  - Protected routes redirect to login when unauthenticated
+  - Session storage: PostgreSQL via `connect-pg-simple`
+  - Middleware: `isAuthenticated` for route protection
+  
 **Session Storage:**
-- **connect-pg-simple**: PostgreSQL session store (included but not actively used in current implementation)
+- **connect-pg-simple**: PostgreSQL session store for authentication
+  - Stores session data in dedicated `sessions` table
+  - Automatic session expiration and cleanup
+  - Secure session management with httpOnly cookies
