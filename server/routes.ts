@@ -6,6 +6,7 @@ import { storage } from "./storage";
 import { insertWarnNoticeSchema, insertEmailSubscriberSchema } from "@shared/schema";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 
 // Configure multer for file uploads
 const upload = multer({
@@ -14,6 +15,20 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup authentication - Reference: blueprint:javascript_log_in_with_replit
+  await setupAuth(app);
+
+  // Get authenticated user
+  app.get("/api/auth/user", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
   // Get all WARN notices (with optional filters)
   app.get("/api/notices", async (req, res) => {
     try {
@@ -217,8 +232,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Import WARN notices from CSV
-  app.post("/api/notices/import", upload.single("csv"), async (req, res) => {
+  // Import WARN notices from CSV - Protected route (requires authentication)
+  app.post("/api/notices/import", isAuthenticated, upload.single("csv"), async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No CSV file uploaded" });

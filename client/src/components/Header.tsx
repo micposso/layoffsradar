@@ -1,17 +1,27 @@
 import { Link, useLocation } from "wouter";
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Header() {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, isAuthenticated } = useAuth();
 
   const navigation = [
     { name: "Home", href: "/" },
     { name: "All Notices", href: "/notices" },
     { name: "Analytics", href: "/analytics" },
-    { name: "Import Data", href: "/admin/import" },
     { name: "Subscribe", href: "#subscribe" },
   ];
 
@@ -58,6 +68,69 @@ export default function Header() {
               <Search className="w-4 h-4" />
             </Button>
           </Link>
+
+          {isAuthenticated && user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full"
+                  data-testid="button-user-menu"
+                >
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage
+                      src={user.profileImageUrl || undefined}
+                      alt={user.email || "User"}
+                      className="object-cover"
+                    />
+                    <AvatarFallback>
+                      <User className="w-4 h-4" />
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {user.firstName || user.lastName
+                        ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
+                        : "User"}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/admin/import">
+                    <span className="cursor-pointer" data-testid="menu-item-admin-import">
+                      Import Data
+                    </span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <a href="/api/logout" className="cursor-pointer" data-testid="menu-item-logout">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    <span>Log out</span>
+                  </a>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button
+              variant="default"
+              size="sm"
+              asChild
+              className="hidden md:inline-flex"
+              data-testid="button-login"
+            >
+              <a href="/api/login">Log in</a>
+            </Button>
+          )}
 
           <Button
             variant="ghost"

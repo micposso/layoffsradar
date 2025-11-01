@@ -4,7 +4,7 @@ import {
   warnNotices, 
   emailSubscribers,
   type User, 
-  type InsertUser,
+  type UpsertUser,
   type WarnNotice,
   type InsertWarnNotice,
   type EmailSubscriber,
@@ -22,10 +22,9 @@ export type WarnNoticeFilters = {
 };
 
 export interface IStorage {
-  // User methods (keeping for compatibility)
+  // User methods - Required for Replit Auth (blueprint:javascript_log_in_with_replit)
   getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  upsertUser(user: UpsertUser): Promise<User>;
 
   // WARN Notice methods
   getAllWarnNotices(): Promise<WarnNotice[]>;
@@ -42,21 +41,23 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  // User methods
+  // User methods - Required for Replit Auth (blueprint:javascript_log_in_with_replit)
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async upsertUser(userData: UpsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
-      .values(insertUser)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
       .returning();
     return user;
   }
