@@ -8,6 +8,7 @@ import StateDetail from "@/pages/StateDetail";
 import AllNotices from "@/pages/AllNotices";
 import Analytics from "@/pages/Analytics";
 import CompanyDetail from "@/pages/CompanyDetail";
+import AdminImport from "@/pages/AdminImport";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/notices" component={AllNotices} />
       <Route path="/analytics" component={Analytics} />
       <Route path="/company/:companyName" component={CompanyDetail} />
+      <Route path="/admin/import" component={AdminImport} />
       <Route component={NotFound} />
     </Switch>
   );

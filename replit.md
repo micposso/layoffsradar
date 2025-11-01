@@ -20,6 +20,14 @@ Preferred communication style: Simple, everyday language.
 - Enhanced UI/UX with interactive company links and timeline charts
 - Fixed filtering bugs: worker range initialization from dataset, effective date support
 
+**CSV Import Feature:**
+- Admin import page at /admin/import for bulk uploading WARN notices
+- File upload with validation, duplicate detection, and error reporting
+- Automatically refreshes all data views after successful import
+- **Security Note**: Import endpoint is currently unprotected - suitable for internal use only
+  - For public deployment: Add authentication middleware to POST /api/notices/import
+  - Consider adding admin role checks before allowing data imports
+
 **Email Notifications Status:**
 - Resend integration available but not configured (user dismissed setup)
 - Future implementation can use Resend connector or manual API key storage

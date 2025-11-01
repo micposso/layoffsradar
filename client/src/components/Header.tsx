@@ -11,6 +11,7 @@ export default function Header() {
     { name: "Home", href: "/" },
     { name: "All Notices", href: "/notices" },
     { name: "Analytics", href: "/analytics" },
+    { name: "Import Data", href: "/admin/import" },
     { name: "Subscribe", href: "#subscribe" },
   ];
 

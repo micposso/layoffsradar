@@ -1,9 +1,17 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import multer from "multer";
+import { parse } from "csv-parse/sync";
 import { storage } from "./storage";
 import { insertWarnNoticeSchema, insertEmailSubscriberSchema } from "@shared/schema";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
+
+// Configure multer for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get all WARN notices (with optional filters)
@@ -206,6 +214,97 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching analytics:", error);
       res.status(500).json({ message: "Failed to fetch analytics data" });
+    }
+  });
+
+  // Import WARN notices from CSV
+  app.post("/api/notices/import", upload.single("csv"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No CSV file uploaded" });
+      }
+
+      const csvContent = req.file.buffer.toString("utf-8");
+      
+      // Parse CSV
+      const records = parse(csvContent, {
+        columns: true,
+        skip_empty_lines: true,
+        trim: true,
+      });
+
+      const results = {
+        success: 0,
+        failed: 0,
+        duplicates: 0,
+        errors: [] as Array<{ row: number; error: string }>,
+      };
+
+      // Get existing notices to check for duplicates
+      const existingNotices = await storage.getAllWarnNotices();
+      const existingKeys = new Set(
+        existingNotices.map(n => 
+          `${n.companyName.toLowerCase()}-${n.state}-${n.filingDate}`
+        )
+      );
+
+      // Process each row
+      for (let i = 0; i < records.length; i++) {
+        const row = records[i] as any;
+        const rowNum = i + 2; // +2 for header row and 1-indexed
+
+        try {
+          // Convert CSV row to notice object
+          const noticeData = {
+            companyName: row.companyName,
+            state: row.state?.toUpperCase(),
+            city: row.city,
+            workersAffected: parseInt(row.workersAffected, 10),
+            filingDate: row.filingDate,
+            effectiveDate: row.effectiveDate || null,
+            industry: row.industry || null,
+            layoffType: row.layoffType || null,
+          };
+
+          // Validate with Zod schema
+          const validated = insertWarnNoticeSchema.parse(noticeData);
+
+          // Check for duplicate
+          const duplicateKey = `${validated.companyName.toLowerCase()}-${validated.state}-${validated.filingDate}`;
+          if (existingKeys.has(duplicateKey)) {
+            results.duplicates++;
+            continue;
+          }
+
+          // Insert the notice
+          await storage.createWarnNotice(validated);
+          existingKeys.add(duplicateKey); // Prevent duplicates within the same import
+          results.success++;
+
+        } catch (error) {
+          results.failed++;
+          if (error instanceof z.ZodError) {
+            const validationError = fromZodError(error);
+            results.errors.push({
+              row: rowNum,
+              error: validationError.message,
+            });
+          } else {
+            results.errors.push({
+              row: rowNum,
+              error: error instanceof Error ? error.message : "Unknown error",
+            });
+          }
+        }
+      }
+
+      res.json(results);
+
+    } catch (error) {
+      console.error("Error importing CSV:", error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to import CSV file" 
+      });
     }
   });
 
