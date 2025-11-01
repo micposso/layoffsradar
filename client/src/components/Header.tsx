@@ -19,8 +19,7 @@ export default function Header() {
   const { user, isAuthenticated } = useAuth();
 
   const navigation = [
-    { name: "Home", href: "/" },
-    { name: "All Notices", href: "/notices" },
+    { name: "About", href: "/about" },
     { name: "Analytics", href: "/analytics" },
     { name: "Subscribe", href: "#subscribe" },
   ];
@@ -58,17 +57,6 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Link href="/notices">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hidden md:flex"
-              data-testid="button-search"
-            >
-              <Search className="w-4 h-4" />
-            </Button>
-          </Link>
-
           {isAuthenticated && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

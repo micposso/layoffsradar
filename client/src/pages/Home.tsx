@@ -122,20 +122,25 @@ export default function Home() {
       <Header />
 
       <main className="flex-1">
-        <section className="py-12 md:py-16 lg:py-20 bg-gradient-to-b from-background to-muted/20">
-          <div className="container px-4 mx-auto md:px-6 lg:px-8">
-            <div className="max-w-3xl mx-auto mb-12 text-center">
-              <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl" data-testid="heading-main">
+        {/* Hero Section */}
+        <section className="py-12 bg-background border-b">
+          <div className="container px-4 mx-auto md:px-6 lg:px-8 max-w-7xl">
+            <div className="text-center mb-8">
+              <h1 className="mb-3 text-4xl font-bold tracking-tight md:text-5xl" data-testid="heading-main">
                 WARN Layoff Tracker
               </h1>
-              <p className="text-lg text-muted-foreground md:text-xl" data-testid="text-hero-description">
-                Track layoffs and WARN filings in real time — stay informed, stay prepared.
+              <p className="text-lg text-muted-foreground mb-1" data-testid="text-hero-description">
+                Track layoffs and WARN filings in real time — stay prepared.
+              </p>
+              <p className="text-muted-foreground" data-testid="text-hero-tagline">
+                Check your company or sign up for alerts.
               </p>
             </div>
 
-            <div className="grid gap-6 max-w-5xl mx-auto mb-12 md:grid-cols-3">
+            {/* Stats Row */}
+            <div className="grid gap-4 mb-8 md:grid-cols-3 max-w-4xl mx-auto">
               <StatCard
-                title="WARN Notices"
+                title="Notices"
                 value={stats?.totalNotices || notices.length}
                 icon={FileText}
               />
@@ -151,102 +156,50 @@ export default function Home() {
               />
             </div>
 
-            <div className="max-w-6xl mx-auto mb-12">
-              <RecentCompanies />
+            {/* Search Bar */}
+            <div className="max-w-4xl mx-auto mb-8">
+              <div className="flex flex-col gap-3 md:flex-row">
+                <Input
+                  type="text"
+                  placeholder="Search company or state..."
+                  value={companySearch}
+                  onChange={(e) => setCompanySearch(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="flex-1"
+                  data-testid="input-search"
+                />
+                <Button
+                  onClick={handleSearch}
+                  className="md:w-auto"
+                  data-testid="button-search"
+                >
+                  <Search className="w-4 h-4 mr-2" />
+                  Search
+                </Button>
+                <Button
+                  variant="secondary"
+                  asChild
+                  className="md:w-auto"
+                  data-testid="button-subscribe-alerts"
+                >
+                  <a href="#subscribe">Subscribe for Alerts</a>
+                </Button>
+              </div>
             </div>
 
-            <div className="max-w-6xl mx-auto mb-12">
+            {/* Map Section */}
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-4">
+                <p className="text-sm text-muted-foreground" data-testid="text-map-tooltip">
+                  Click a state to explore WARN filings
+                </p>
+              </div>
               <USMap stateData={stateData} />
             </div>
-
-            <Card className="max-w-3xl mx-auto">
-              <CardContent className="p-6">
-                <div className="flex flex-col gap-3 md:flex-row md:items-end">
-                  <div className="flex-1">
-                    <label htmlFor="company-search" className="block mb-2 text-sm font-medium">
-                      Company name
-                    </label>
-                    <Input
-                      id="company-search"
-                      type="text"
-                      placeholder="Search by company..."
-                      value={companySearch}
-                      onChange={(e) => setCompanySearch(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      data-testid="input-company-search"
-                    />
-                  </div>
-                  <div className="w-full md:w-48">
-                    <label htmlFor="state-filter" className="block mb-2 text-sm font-medium">
-                      State
-                    </label>
-                    <Select value={stateFilter} onValueChange={setStateFilter}>
-                      <SelectTrigger id="state-filter" data-testid="select-state-filter">
-                        <SelectValue placeholder="All states" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All states</SelectItem>
-                        {US_STATES.map((state) => (
-                          <SelectItem key={state.code} value={state.code}>
-                            {state.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button
-                    onClick={handleSearch}
-                    className="w-full md:w-auto"
-                    data-testid="button-search"
-                  >
-                    <Search className="w-4 h-4 mr-2" />
-                    Search
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </section>
 
-        <section className="py-12 bg-background border-t">
-          <div className="container px-4 mx-auto md:px-6 lg:px-8">
-            <div className="flex flex-col items-center justify-between gap-6 max-w-5xl mx-auto md:flex-row">
-              <div className="flex items-start gap-4 flex-1">
-                <div className="p-3 rounded-lg bg-muted">
-                  <Info className="w-6 h-6 text-muted-foreground" />
-                </div>
-                <div>
-                  <h3 className="mb-2 text-lg font-semibold" data-testid="heading-warn-info">
-                    What is a WARN notice?
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-3" data-testid="text-warn-description">
-                    The Worker Adjustment and Retraining Notification (WARN) Act requires employers to provide 60 days advance notice of plant closings and mass layoffs.
-                  </p>
-                  <Button variant="outline" size="sm" asChild data-testid="button-learn-more">
-                    <a href="https://www.dol.gov/general/topic/termination/plantclosings" target="_blank" rel="noopener noreferrer">
-                      Learn more
-                    </a>
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4 flex-1">
-                <div className="flex-1 text-center md:text-left">
-                  <h3 className="mb-2 text-lg font-semibold" data-testid="heading-subscribe">
-                    Get notified about new layoffs
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-3" data-testid="text-subscribe-description">
-                    Subscribe to receive updates when new WARN notices are filed.
-                  </p>
-                  <Button asChild data-testid="button-subscribe-cta">
-                    <a href="#subscribe">Subscribe</a>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
+        {/* Subscribe Section */}
         <section id="subscribe" className="py-12 bg-muted/30">
           <div className="container px-4 mx-auto md:px-6 lg:px-8">
             <div className="max-w-2xl mx-auto">
