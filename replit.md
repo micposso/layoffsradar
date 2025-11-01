@@ -38,6 +38,12 @@ Preferred communication style: Simple, everyday language.
   - Database schema extended with state_preference and marketing_opt_in fields
   - Welcome emails now personalize based on state preference
   - Full end-to-end testing completed and passing
+- **Enhanced Homepage Subscribe Section**:
+  - Added state dropdown to homepage subscribe form
+  - Two-column layout with email and state filter fields
+  - Fully integrated with Resend for personalized welcome emails
+  - Users can subscribe with state preference without leaving homepage
+  - "More options" link for full subscription page with marketing opt-in
 
 **CSV Import Feature:**
 - Admin import page at /admin/import for bulk uploading WARN notices
