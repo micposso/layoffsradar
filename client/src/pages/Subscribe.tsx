@@ -110,11 +110,7 @@ export default function Subscribe() {
         statePreference: data.statePreference || "",
         marketingOptIn: data.marketingOptIn ? 1 : 0,
       };
-      return apiRequest("/api/subscribers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      return apiRequest("POST", "/api/subscribers", payload);
     },
     onSuccess: () => {
       setIsSubscribed(true);

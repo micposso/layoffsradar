@@ -9,6 +9,7 @@ import AllNotices from "@/pages/AllNotices";
 import Analytics from "@/pages/Analytics";
 import CompanyDetail from "@/pages/CompanyDetail";
 import AdminImport from "@/pages/AdminImport";
+import Subscribe from "@/pages/Subscribe";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 import { initGA } from "./lib/analytics";
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/notices" component={AllNotices} />
       <Route path="/analytics" component={Analytics} />
       <Route path="/company/:companyName" component={CompanyDetail} />
+      <Route path="/subscribe" component={Subscribe} />
       <Route path="/admin/import" component={AdminImport} />
       <Route component={NotFound} />
     </Switch>
