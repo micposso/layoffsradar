@@ -25,6 +25,12 @@ Preferred communication style: Simple, everyday language.
   - Protected CSV import endpoint with isAuthenticated middleware
   - User profile display in Header with avatar and logout functionality
   - Automatic redirect to login for protected routes
+- **Added Company Logos Feature**:
+  - Created normalized companies table with slug-based deduplication
+  - All WARN notices now linked to canonical company records via foreign key
+  - Company logos display in Recent Companies component (fallback to initials)
+  - CSV import automatically creates/links company records
+  - Logo URLs stored for future logo upload capability
 
 **CSV Import Feature:**
 - Admin import page at /admin/import for bulk uploading WARN notices
@@ -109,10 +115,18 @@ RESTful API with the following endpoints:
 
 **Schema Design:**
 
+**Companies Table:**
+- Canonical company records with normalized data
+- Fields: id (UUID), name, slug (unique, URL-friendly), logoUrl, headquarters, industry
+- Slug generation handles name variations ("Acme Inc" = "Acme, Inc." = slug: "acme-inc")
+- Logo URLs stored as text, future logo upload UI planned
+- Created/updated timestamps for tracking changes
+
 **WARN Notices Table:**
 - Primary data entity storing layoff information
-- Fields: company name, state (2-char code), city, workers affected, filing date, effective date, industry, layoff type
+- Fields: companyId (FK to companies), company name, state (2-char code), city, workers affected, filing date, effective date, industry, layoff type
 - UUID primary keys with automatic generation
+- Foreign key to companies table for normalized company data
 - Date fields for temporal queries and sorting
 - Created timestamp for tracking data freshness
 
