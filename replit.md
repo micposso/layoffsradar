@@ -10,6 +10,20 @@ The application serves as a civic technology tool, presenting sensitive employme
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Updates
+
+**November 1, 2025:**
+- Replaced custom SVG map with react-simple-maps package for better reliability
+- Implemented analytics dashboard with Recharts visualizations (timeline, state distribution, industry breakdown)
+- Added advanced filtering with date ranges (filing/effective), worker count slider, and industry multi-select
+- Created company detail pages with historical trends and statistics
+- Enhanced UI/UX with interactive company links and timeline charts
+- Fixed filtering bugs: worker range initialization from dataset, effective date support
+
+**Email Notifications Status:**
+- Resend integration available but not configured (user dismissed setup)
+- Future implementation can use Resend connector or manual API key storage
+
 ## System Architecture
 
 ### Frontend Architecture
@@ -117,6 +131,14 @@ RESTful API with the following endpoints:
 - **Google Fonts**: Inter, IBM Plex Sans, IBM Plex Mono, JetBrains Mono
   - Professional typography for data presentation
   - Preconnected for performance optimization
+
+**Map Visualization:**
+- **react-simple-maps**: SVG-based interactive US map component
+  - Uses GeoJSON topology from us-atlas CDN
+  - geoAlbersUsa projection optimized for US maps
+  - Interactive hover tooltips and click navigation
+  - Color-coded by WARN notice density (5-tier scale)
+  - Renders all 50 states plus DC and territories
 
 **Validation & Forms:**
 - **Zod**: Schema validation library
