@@ -98,7 +98,7 @@ export default function Subscribe() {
     resolver: zodResolver(subscribeSchema),
     defaultValues: {
       email: "",
-      statePreference: "",
+      statePreference: "ALL",
       marketingOptIn: false,
     },
   });
@@ -107,7 +107,7 @@ export default function Subscribe() {
     mutationFn: async (data: SubscribeFormData) => {
       const payload = {
         email: data.email,
-        statePreference: data.statePreference || "",
+        statePreference: (data.statePreference && data.statePreference !== "ALL") ? data.statePreference : "",
         marketingOptIn: data.marketingOptIn ? 1 : 0,
       };
       return apiRequest("POST", "/api/subscribers", payload);
@@ -203,7 +203,7 @@ export default function Subscribe() {
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  <SelectItem value="">All states (no filter)</SelectItem>
+                                  <SelectItem value="ALL">All states (no filter)</SelectItem>
                                   {US_STATES.map((state) => (
                                     <SelectItem key={state.code} value={state.code}>
                                       {state.name}
