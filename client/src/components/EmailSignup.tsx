@@ -14,8 +14,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, CheckCircle2 } from "lucide-react";
+import { Mail, CheckCircle2, Settings } from "lucide-react";
 import { z } from "zod";
+import { Link } from "wouter";
 
 type FormData = z.infer<typeof insertEmailSubscriberSchema>;
 
@@ -102,9 +103,17 @@ export default function EmailSignup() {
           </Button>
         </form>
       </Form>
-      <p className="mt-3 text-sm text-muted-foreground" data-testid="text-privacy-notice">
-        Get weekly email updates about new WARN layoff notices. Unsubscribe anytime.
-      </p>
+      <div className="flex flex-col items-start justify-between gap-2 mt-3 sm:flex-row sm:items-center">
+        <p className="text-sm text-muted-foreground" data-testid="text-privacy-notice">
+          Get weekly email updates about new WARN layoff notices. Unsubscribe anytime.
+        </p>
+        <Link href="/subscribe">
+          <Button variant="ghost" size="sm" className="gap-2 h-auto px-2 py-1 text-sm" data-testid="link-customize-preferences">
+            <Settings className="w-3 h-3" />
+            Customize preferences
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 }
