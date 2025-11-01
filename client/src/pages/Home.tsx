@@ -1,17 +1,83 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useLocation } from "wouter";
 import { WarnNotice } from "@shared/schema";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import USMap from "@/components/USMap";
 import EmailSignup from "@/components/EmailSignup";
-import WarnNoticeCard from "@/components/WarnNoticeCard";
 import StatCard from "@/components/StatCard";
-import { FileText, Users, MapPin, TrendingUp } from "lucide-react";
-import { Link } from "wouter";
+import { FileText, Users, MapPin, Search, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const US_STATES = [
+  { code: "AL", name: "Alabama" },
+  { code: "AK", name: "Alaska" },
+  { code: "AZ", name: "Arizona" },
+  { code: "AR", name: "Arkansas" },
+  { code: "CA", name: "California" },
+  { code: "CO", name: "Colorado" },
+  { code: "CT", name: "Connecticut" },
+  { code: "DE", name: "Delaware" },
+  { code: "FL", name: "Florida" },
+  { code: "GA", name: "Georgia" },
+  { code: "HI", name: "Hawaii" },
+  { code: "ID", name: "Idaho" },
+  { code: "IL", name: "Illinois" },
+  { code: "IN", name: "Indiana" },
+  { code: "IA", name: "Iowa" },
+  { code: "KS", name: "Kansas" },
+  { code: "KY", name: "Kentucky" },
+  { code: "LA", name: "Louisiana" },
+  { code: "ME", name: "Maine" },
+  { code: "MD", name: "Maryland" },
+  { code: "MA", name: "Massachusetts" },
+  { code: "MI", name: "Michigan" },
+  { code: "MN", name: "Minnesota" },
+  { code: "MS", name: "Mississippi" },
+  { code: "MO", name: "Missouri" },
+  { code: "MT", name: "Montana" },
+  { code: "NE", name: "Nebraska" },
+  { code: "NV", name: "Nevada" },
+  { code: "NH", name: "New Hampshire" },
+  { code: "NJ", name: "New Jersey" },
+  { code: "NM", name: "New Mexico" },
+  { code: "NY", name: "New York" },
+  { code: "NC", name: "North Carolina" },
+  { code: "ND", name: "North Dakota" },
+  { code: "OH", name: "Ohio" },
+  { code: "OK", name: "Oklahoma" },
+  { code: "OR", name: "Oregon" },
+  { code: "PA", name: "Pennsylvania" },
+  { code: "RI", name: "Rhode Island" },
+  { code: "SC", name: "South Carolina" },
+  { code: "SD", name: "South Dakota" },
+  { code: "TN", name: "Tennessee" },
+  { code: "TX", name: "Texas" },
+  { code: "UT", name: "Utah" },
+  { code: "VT", name: "Vermont" },
+  { code: "VA", name: "Virginia" },
+  { code: "WA", name: "Washington" },
+  { code: "WV", name: "West Virginia" },
+  { code: "WI", name: "Wisconsin" },
+  { code: "WY", name: "Wyoming" },
+];
 
 export default function Home() {
-  const { data: notices = [], isLoading } = useQuery<WarnNotice[]>({
+  const [, setLocation] = useLocation();
+  const [companySearch, setCompanySearch] = useState("");
+  const [stateFilter, setStateFilter] = useState<string>("");
+
+  const { data: notices = [] } = useQuery<WarnNotice[]>({
     queryKey: ["/api/notices"],
   });
 
@@ -33,9 +99,22 @@ export default function Home() {
     return acc;
   }, {} as Record<string, { notices: number; workers: number }>);
 
-  const latestNotices = [...notices]
-    .sort((a, b) => new Date(b.filingDate).getTime() - new Date(a.filingDate).getTime())
-    .slice(0, 9);
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (companySearch) {
+      params.set("company", companySearch);
+    }
+    if (stateFilter) {
+      params.set("state", stateFilter);
+    }
+    setLocation(`/notices?${params.toString()}`);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -49,104 +128,125 @@ export default function Home() {
                 WARN Layoff Tracker
               </h1>
               <p className="text-lg text-muted-foreground md:text-xl" data-testid="text-hero-description">
-                Track employment layoff notices across the United States in real-time.
-                Stay informed about workforce adjustments and company closures.
+                Track layoffs and WARN filings in real time — stay informed, stay prepared.
               </p>
             </div>
 
-            <div className="max-w-6xl mx-auto">
-              <USMap stateData={stateData} />
-            </div>
-          </div>
-        </section>
-
-        <section className="py-12 bg-background">
-          <div className="container px-4 mx-auto md:px-6 lg:px-8">
-            <div className="max-w-2xl mx-auto">
-              <div className="mb-6 text-center">
-                <h2 className="mb-2 text-2xl font-semibold md:text-3xl" data-testid="heading-subscribe">
-                  Stay Updated
-                </h2>
-                <p className="text-muted-foreground" data-testid="text-subscribe-description">
-                  Subscribe to receive weekly email notifications about new WARN notices
-                </p>
-              </div>
-              <EmailSignup />
-            </div>
-          </div>
-        </section>
-
-        <section className="py-12 bg-muted/30">
-          <div className="container px-4 mx-auto md:px-6 lg:px-8">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 max-w-5xl mx-auto mb-12 md:grid-cols-3">
               <StatCard
-                title="Total Notices"
+                title="WARN Notices"
                 value={stats?.totalNotices || notices.length}
                 icon={FileText}
               />
               <StatCard
-                title="Workers Affected"
+                title="Jobs Affected"
                 value={stats?.totalWorkers || notices.reduce((sum, n) => sum + n.workersAffected, 0)}
                 icon={Users}
               />
               <StatCard
-                title="Active States"
+                title="States Reporting"
                 value={stats?.activeStates || Object.keys(stateData).length}
                 icon={MapPin}
               />
-              <StatCard
-                title="This Month"
-                value={stats?.recentIncrease || notices.filter(n => {
-                  const date = new Date(n.filingDate);
-                  const now = new Date();
-                  return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-                }).length}
-                icon={TrendingUp}
-              />
+            </div>
+
+            <div className="max-w-6xl mx-auto mb-12">
+              <USMap stateData={stateData} />
+            </div>
+
+            <Card className="max-w-3xl mx-auto">
+              <CardContent className="p-6">
+                <div className="flex flex-col gap-3 md:flex-row md:items-end">
+                  <div className="flex-1">
+                    <label htmlFor="company-search" className="block mb-2 text-sm font-medium">
+                      Company name
+                    </label>
+                    <Input
+                      id="company-search"
+                      type="text"
+                      placeholder="Search by company..."
+                      value={companySearch}
+                      onChange={(e) => setCompanySearch(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      data-testid="input-company-search"
+                    />
+                  </div>
+                  <div className="w-full md:w-48">
+                    <label htmlFor="state-filter" className="block mb-2 text-sm font-medium">
+                      State
+                    </label>
+                    <Select value={stateFilter} onValueChange={setStateFilter}>
+                      <SelectTrigger id="state-filter" data-testid="select-state-filter">
+                        <SelectValue placeholder="All states" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All states</SelectItem>
+                        {US_STATES.map((state) => (
+                          <SelectItem key={state.code} value={state.code}>
+                            {state.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button
+                    onClick={handleSearch}
+                    className="w-full md:w-auto"
+                    data-testid="button-search"
+                  >
+                    <Search className="w-4 h-4 mr-2" />
+                    Search
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        <section className="py-12 bg-background border-t">
+          <div className="container px-4 mx-auto md:px-6 lg:px-8">
+            <div className="flex flex-col items-center justify-between gap-6 max-w-5xl mx-auto md:flex-row">
+              <div className="flex items-start gap-4 flex-1">
+                <div className="p-3 rounded-lg bg-muted">
+                  <Info className="w-6 h-6 text-muted-foreground" />
+                </div>
+                <div>
+                  <h3 className="mb-2 text-lg font-semibold" data-testid="heading-warn-info">
+                    What is a WARN notice?
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3" data-testid="text-warn-description">
+                    The Worker Adjustment and Retraining Notification (WARN) Act requires employers to provide 60 days advance notice of plant closings and mass layoffs.
+                  </p>
+                  <Button variant="outline" size="sm" asChild data-testid="button-learn-more">
+                    <a href="https://www.dol.gov/general/topic/termination/plantclosings" target="_blank" rel="noopener noreferrer">
+                      Learn more
+                    </a>
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 flex-1">
+                <div className="flex-1 text-center md:text-left">
+                  <h3 className="mb-2 text-lg font-semibold" data-testid="heading-subscribe">
+                    Get notified about new layoffs
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3" data-testid="text-subscribe-description">
+                    Subscribe to receive updates when new WARN notices are filed.
+                  </p>
+                  <Button asChild data-testid="button-subscribe-cta">
+                    <a href="#subscribe">Subscribe</a>
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="py-16 bg-background">
+        <section id="subscribe" className="py-12 bg-muted/30">
           <div className="container px-4 mx-auto md:px-6 lg:px-8">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="mb-2 text-3xl font-bold" data-testid="heading-latest-notices">Latest WARN Notices</h2>
-                <p className="text-muted-foreground" data-testid="text-latest-description">
-                  Most recent employment layoff notifications filed
-                </p>
-              </div>
-              <Link href="/notices">
-                <Button variant="outline" data-testid="button-view-all-notices">
-                  View All
-                </Button>
-              </Link>
+            <div className="max-w-2xl mx-auto">
+              <EmailSignup />
             </div>
-
-            {isLoading ? (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {[...Array(6)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-48 rounded-lg bg-muted animate-pulse"
-                  />
-                ))}
-              </div>
-            ) : latestNotices.length === 0 ? (
-              <div className="py-16 text-center" data-testid="empty-state-notices">
-                <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="mb-2 text-lg font-semibold">No notices yet</h3>
-                <p className="text-muted-foreground">
-                  WARN notices will appear here once they're added to the database.
-                </p>
-              </div>
-            ) : (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {latestNotices.map((notice) => (
-                  <WarnNoticeCard key={notice.id} notice={notice} />
-                ))}
-              </div>
-            )}
           </div>
         </section>
       </main>
