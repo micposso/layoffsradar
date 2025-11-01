@@ -51,6 +51,8 @@ export type WarnNotice = typeof warnNotices.$inferSelect;
 export const emailSubscribers = pgTable("email_subscribers", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: text("email").notNull().unique(),
+  statePreference: varchar("state_preference", { length: 2 }),
+  marketingOptIn: integer("marketing_opt_in").default(0).notNull(),
   subscribedAt: timestamp("subscribed_at").defaultNow().notNull(),
 });
 
@@ -59,6 +61,8 @@ export const insertEmailSubscriberSchema = createInsertSchema(emailSubscribers).
   subscribedAt: true,
 }).extend({
   email: z.string().email("Please enter a valid email address"),
+  statePreference: z.string().length(2).optional().or(z.literal("")),
+  marketingOptIn: z.number().int().min(0).max(1).default(0),
 });
 
 export type InsertEmailSubscriber = z.infer<typeof insertEmailSubscriberSchema>;
