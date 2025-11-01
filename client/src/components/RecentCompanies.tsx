@@ -1,19 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
 import { WarnNotice } from "@shared/schema";
 import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { Building2 } from "lucide-react";
+
+// Extended type with company info
+type WarnNoticeWithCompany = WarnNotice & {
+  company?: {
+    id: string;
+    name: string;
+    slug: string;
+    logoUrl: string | null;
+    headquarters: string | null;
+    industry: string | null;
+  } | null;
+};
 
 interface CompanyLayoff {
   companyName: string;
   totalWorkers: number;
   latestMonth: string;
   noticeCount: number;
+  logoUrl?: string | null;
 }
 
 export default function RecentCompanies() {
-  const { data: notices = [] } = useQuery<WarnNotice[]>({
+  const { data: notices = [] } = useQuery<WarnNoticeWithCompany[]>({
     queryKey: ["/api/notices"],
   });
 
@@ -26,12 +39,17 @@ export default function RecentCompanies() {
             totalWorkers: 0,
             latestMonth: notice.filingDate,
             noticeCount: 0,
+            logoUrl: notice.company?.logoUrl || null,
           };
         }
         acc[companyName].totalWorkers += notice.workersAffected;
         acc[companyName].noticeCount += 1;
         if (new Date(notice.filingDate) > new Date(acc[companyName].latestMonth)) {
           acc[companyName].latestMonth = notice.filingDate;
+        }
+        // Update logo if this notice has one
+        if (notice.company?.logoUrl && !acc[companyName].logoUrl) {
+          acc[companyName].logoUrl = notice.company.logoUrl;
         }
         return acc;
       }, {} as Record<string, CompanyLayoff>)
@@ -78,6 +96,9 @@ export default function RecentCompanies() {
           >
             <div className="flex flex-col items-center text-center gap-3">
               <Avatar className="w-12 h-12 border-2 border-border">
+                {company.logoUrl && (
+                  <AvatarImage src={company.logoUrl} alt={company.companyName} />
+                )}
                 <AvatarFallback className="bg-muted text-foreground font-semibold text-sm">
                   {getCompanyInitials(company.companyName)}
                 </AvatarFallback>

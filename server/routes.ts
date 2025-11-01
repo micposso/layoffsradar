@@ -269,8 +269,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const rowNum = i + 2; // +2 for header row and 1-indexed
 
         try {
+          // Get or create company first
+          const company = await storage.getOrCreateCompany(
+            row.companyName,
+            row.industry || undefined
+          );
+
           // Convert CSV row to notice object
           const noticeData = {
+            companyId: company.id,
             companyName: row.companyName,
             state: row.state?.toUpperCase(),
             city: row.city,

@@ -1,17 +1,25 @@
 // Storage interface and implementation - adapted from javascript_database blueprint
 import { 
   users, 
-  warnNotices, 
+  warnNotices,
+  companies,
   emailSubscribers,
   type User, 
   type UpsertUser,
   type WarnNotice,
   type InsertWarnNotice,
   type EmailSubscriber,
-  type InsertEmailSubscriber
+  type InsertEmailSubscriber,
+  type Company,
+  type InsertCompany
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte, inArray, sql } from "drizzle-orm";
+
+// Extended type that includes company information
+export type WarnNoticeWithCompany = WarnNotice & {
+  company?: Company | null;
+};
 
 export type WarnNoticeFilters = {
   dateFrom?: string;
@@ -27,13 +35,17 @@ export interface IStorage {
   upsertUser(user: UpsertUser): Promise<User>;
 
   // WARN Notice methods
-  getAllWarnNotices(): Promise<WarnNotice[]>;
-  getFilteredWarnNotices(filters: WarnNoticeFilters): Promise<WarnNotice[]>;
-  getWarnNoticesByState(state: string): Promise<WarnNotice[]>;
-  getWarnNoticesByCompany(companyName: string): Promise<WarnNotice[]>;
+  getAllWarnNotices(): Promise<WarnNoticeWithCompany[]>;
+  getFilteredWarnNotices(filters: WarnNoticeFilters): Promise<WarnNoticeWithCompany[]>;
+  getWarnNoticesByState(state: string): Promise<WarnNoticeWithCompany[]>;
+  getWarnNoticesByCompany(companyName: string): Promise<WarnNoticeWithCompany[]>;
   getWarnNoticeById(id: string): Promise<WarnNotice | undefined>;
   createWarnNotice(notice: InsertWarnNotice): Promise<WarnNotice>;
   getUniqueCompanies(): Promise<string[]>;
+
+  // Company methods
+  getCompanyBySlug(slug: string): Promise<Company | undefined>;
+  getOrCreateCompany(name: string, industry?: string): Promise<Company>;
 
   // Email Subscriber methods
   createEmailSubscriber(subscriber: InsertEmailSubscriber): Promise<EmailSubscriber>;
@@ -63,11 +75,23 @@ export class DatabaseStorage implements IStorage {
   }
 
   // WARN Notice methods
-  async getAllWarnNotices(): Promise<WarnNotice[]> {
-    return await db.select().from(warnNotices).orderBy(desc(warnNotices.filingDate));
+  async getAllWarnNotices(): Promise<WarnNoticeWithCompany[]> {
+    const results = await db
+      .select({
+        notice: warnNotices,
+        company: companies,
+      })
+      .from(warnNotices)
+      .leftJoin(companies, eq(warnNotices.companyId, companies.id))
+      .orderBy(desc(warnNotices.filingDate));
+
+    return results.map(({ notice, company }) => ({
+      ...notice,
+      company,
+    }));
   }
 
-  async getFilteredWarnNotices(filters: WarnNoticeFilters): Promise<WarnNotice[]> {
+  async getFilteredWarnNotices(filters: WarnNoticeFilters): Promise<WarnNoticeWithCompany[]> {
     const conditions = [];
 
     if (filters.dateFrom) {
@@ -94,19 +118,37 @@ export class DatabaseStorage implements IStorage {
       return await this.getAllWarnNotices();
     }
 
-    return await db
-      .select()
+    const results = await db
+      .select({
+        notice: warnNotices,
+        company: companies,
+      })
       .from(warnNotices)
+      .leftJoin(companies, eq(warnNotices.companyId, companies.id))
       .where(and(...conditions))
       .orderBy(desc(warnNotices.filingDate));
+
+    return results.map(({ notice, company }) => ({
+      ...notice,
+      company,
+    }));
   }
 
-  async getWarnNoticesByState(state: string): Promise<WarnNotice[]> {
-    return await db
-      .select()
+  async getWarnNoticesByState(state: string): Promise<WarnNoticeWithCompany[]> {
+    const results = await db
+      .select({
+        notice: warnNotices,
+        company: companies,
+      })
       .from(warnNotices)
+      .leftJoin(companies, eq(warnNotices.companyId, companies.id))
       .where(eq(warnNotices.state, state))
       .orderBy(desc(warnNotices.filingDate));
+
+    return results.map(({ notice, company }) => ({
+      ...notice,
+      company,
+    }));
   }
 
   async getWarnNoticeById(id: string): Promise<WarnNotice | undefined> {
@@ -114,12 +156,21 @@ export class DatabaseStorage implements IStorage {
     return notice || undefined;
   }
 
-  async getWarnNoticesByCompany(companyName: string): Promise<WarnNotice[]> {
-    return await db
-      .select()
+  async getWarnNoticesByCompany(companyName: string): Promise<WarnNoticeWithCompany[]> {
+    const results = await db
+      .select({
+        notice: warnNotices,
+        company: companies,
+      })
       .from(warnNotices)
+      .leftJoin(companies, eq(warnNotices.companyId, companies.id))
       .where(eq(warnNotices.companyName, companyName))
       .orderBy(desc(warnNotices.filingDate));
+
+    return results.map(({ notice, company }) => ({
+      ...notice,
+      company,
+    }));
   }
 
   async createWarnNotice(insertNotice: InsertWarnNotice): Promise<WarnNotice> {
@@ -154,6 +205,45 @@ export class DatabaseStorage implements IStorage {
       .from(emailSubscribers)
       .where(eq(emailSubscribers.email, email));
     return subscriber || undefined;
+  }
+
+  // Company methods
+  async getCompanyBySlug(slug: string): Promise<Company | undefined> {
+    const [company] = await db
+      .select()
+      .from(companies)
+      .where(eq(companies.slug, slug));
+    return company || undefined;
+  }
+
+  async getOrCreateCompany(name: string, industry?: string): Promise<Company> {
+    // Generate slug from company name
+    const slug = name
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+
+    // Check if company already exists
+    const existing = await this.getCompanyBySlug(slug);
+    if (existing) {
+      return existing;
+    }
+
+    // Create new company
+    const [company] = await db
+      .insert(companies)
+      .values({
+        name,
+        slug,
+        logoUrl: null,
+        headquarters: null,
+        industry: industry || null,
+      })
+      .returning();
+
+    return company;
   }
 }
 
