@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import USMap from "@/components/USMap";
 import EmailSignup from "@/components/EmailSignup";
+import RecentCompanies from "@/components/RecentCompanies";
 import StatCard from "@/components/StatCard";
 import { FileText, Users, MapPin, Search, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -148,6 +149,10 @@ export default function Home() {
                 value={stats?.activeStates || Object.keys(stateData).length}
                 icon={MapPin}
               />
+            </div>
+
+            <div className="max-w-6xl mx-auto mb-12">
+              <RecentCompanies />
             </div>
 
             <div className="max-w-6xl mx-auto mb-12">
