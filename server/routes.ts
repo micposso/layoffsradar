@@ -113,7 +113,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Send welcome email using Resend
       try {
         const { sendWelcomeEmail } = await import("./lib/resend");
-        const emailResult = await sendWelcomeEmail(validatedData.email);
+        const emailResult = await sendWelcomeEmail(
+          validatedData.email, 
+          validatedData.statePreference || undefined
+        );
         
         if (!emailResult.success) {
           console.error("Failed to send welcome email, but subscriber was created:", emailResult.error);

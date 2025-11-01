@@ -38,9 +38,15 @@ export async function getUncachableResendClient() {
   };
 }
 
-export async function sendWelcomeEmail(email: string) {
+export async function sendWelcomeEmail(email: string, statePreference?: string) {
   try {
     const { client } = await getUncachableResendClient();
+    
+    const stateMessage = statePreference 
+      ? `<p style="color: #4a4a4a; line-height: 1.6;">
+          <strong>Your alert preference:</strong> You've chosen to receive notifications for layoffs in <strong>${statePreference}</strong>.
+        </p>`
+      : '';
     
     const { data, error } = await client.emails.send({
       from: 'LAYOFFS RADAR Alert <updates@layoffsradar.com>',
@@ -50,10 +56,11 @@ export async function sendWelcomeEmail(email: string) {
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #1a1a1a;">Welcome to LAYOFFS RADAR</h1>
           <p style="color: #4a4a4a; line-height: 1.6;">
-            Thank you for subscribing to LAYOFFS RADAR alerts. You'll now receive notifications when new layoff notices are filed.
+            Thank you for subscribing to LAYOFFS RADAR alerts. You'll now receive notifications when new layoff notices are filed${statePreference ? ' in ' + statePreference : ''}.
           </p>
+          ${stateMessage}
           <p style="color: #4a4a4a; line-height: 1.6;">
-            Our platform aggregates Worker Adjustment and Retraining Notification (WARN) Act notices from across the United States, helping you stay informed about employment changes in your area.
+            Our platform aggregates Worker Adjustment and Retraining Notification (WARN) Act notices from across the United States, helping you stay informed about employment changes.
           </p>
           <p style="color: #4a4a4a; line-height: 1.6;">
             You can unsubscribe at any time by replying to this email.
