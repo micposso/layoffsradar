@@ -31,6 +31,13 @@ Preferred communication style: Simple, everyday language.
   - Company logos display in Recent Companies component (fallback to initials)
   - CSV import automatically creates/links company records
   - Logo URLs stored for future logo upload capability
+- **Dedicated Subscribe Page with Advanced Preferences**:
+  - New /subscribe route with comprehensive subscription form
+  - State-specific alert filtering (users can choose to receive alerts for specific states)
+  - Marketing communications opt-in checkbox
+  - Database schema extended with state_preference and marketing_opt_in fields
+  - Welcome emails now personalize based on state preference
+  - Full end-to-end testing completed and passing
 
 **CSV Import Feature:**
 - Admin import page at /admin/import for bulk uploading WARN notices
@@ -40,9 +47,11 @@ Preferred communication style: Simple, everyday language.
   - Only authenticated users can access /admin/import page
   - CSV upload requires valid session
 
-**Email Notifications Status:**
-- Resend integration available but not configured (user dismissed setup)
-- Future implementation can use Resend connector or manual API key storage
+**Email Notifications:**
+- Resend integration configured with custom domain (updates@layoffsradar.com)
+- Automated welcome emails sent on subscription
+- Email branding: "LAYOFFS RADAR Alert"
+- Personalized messaging based on subscriber preferences
 
 ## System Architecture
 
@@ -132,7 +141,10 @@ RESTful API with the following endpoints:
 
 **Email Subscribers Table:**
 - Stores user subscriptions for notifications
-- Email uniqueness constraint
+- Fields: id (UUID), email (unique), statePreference (2-char code, optional), marketingOptIn (0/1), subscribedAt
+- State preference enables state-specific alert filtering
+- Marketing opt-in for product updates and feature announcements
+- Email uniqueness constraint prevents duplicate subscriptions
 - Subscription timestamp tracking
 - Separate from notices for clean data separation
 

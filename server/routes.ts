@@ -109,6 +109,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const subscriber = await storage.createEmailSubscriber(validatedData);
+      
+      // Send welcome email using Resend
+      try {
+        const { sendWelcomeEmail } = await import("./lib/resend");
+        const emailResult = await sendWelcomeEmail(
+          validatedData.email, 
+          validatedData.statePreference || undefined
+        );
+        
+        if (!emailResult.success) {
+          console.error("Failed to send welcome email, but subscriber was created:", emailResult.error);
+        }
+      } catch (emailError) {
+        console.error("Error sending welcome email:", emailError);
+      }
+      
       res.status(201).json(subscriber);
     } catch (error) {
       if (error instanceof z.ZodError) {
