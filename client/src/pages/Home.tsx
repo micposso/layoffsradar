@@ -88,6 +88,11 @@ export default function Home() {
     totalWorkers: number;
     activeStates: number;
     recentIncrease: number;
+    trends: {
+      notices: { value: number; isPositive: boolean };
+      workers: { value: number; isPositive: boolean };
+      states: { value: number; isPositive: boolean };
+    };
   }>({
     queryKey: ["/api/stats"],
   });
@@ -144,16 +149,19 @@ export default function Home() {
                 title="Notices"
                 value={stats?.totalNotices || notices.length}
                 icon={FileText}
+                trend={stats?.trends?.notices}
               />
               <StatCard
                 title="Jobs Affected"
                 value={stats?.totalWorkers || notices.reduce((sum, n) => sum + n.workersAffected, 0)}
                 icon={Users}
+                trend={stats?.trends?.workers}
               />
               <StatCard
                 title="States Reporting"
                 value={stats?.activeStates || Object.keys(stateData).length}
                 icon={MapPin}
+                trend={stats?.trends?.states}
               />
             </div>
 

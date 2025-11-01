@@ -121,7 +121,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get statistics
+  // Get statistics with month-over-month trends
   app.get("/api/stats", async (req, res) => {
     try {
       const notices = await storage.getAllWarnNotices();
@@ -131,18 +131,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const uniqueStates = new Set(notices.map(n => n.state));
       const activeStates = uniqueStates.size;
 
-      // Calculate this month's notices
+      // Calculate this month's stats
       const now = new Date();
-      const thisMonth = notices.filter(n => {
+      const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+
+      const thisMonthNotices = notices.filter(n => {
         const date = new Date(n.filingDate);
-        return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-      }).length;
+        return date >= thisMonthStart;
+      });
+
+      const lastMonthNotices = notices.filter(n => {
+        const date = new Date(n.filingDate);
+        return date >= lastMonthStart && date <= lastMonthEnd;
+      });
+
+      // Calculate trends
+      const thisMonthCount = thisMonthNotices.length;
+      const lastMonthCount = lastMonthNotices.length;
+      const thisMonthWorkers = thisMonthNotices.reduce((sum, n) => sum + n.workersAffected, 0);
+      const lastMonthWorkers = lastMonthNotices.reduce((sum, n) => sum + n.workersAffected, 0);
+      const thisMonthStates = new Set(thisMonthNotices.map(n => n.state)).size;
+      const lastMonthStates = new Set(lastMonthNotices.map(n => n.state)).size;
+
+      // Calculate percentage changes
+      const noticeTrend = lastMonthCount > 0 
+        ? Math.round(((thisMonthCount - lastMonthCount) / lastMonthCount) * 100)
+        : 0;
+      
+      const workerTrend = lastMonthWorkers > 0
+        ? Math.round(((thisMonthWorkers - lastMonthWorkers) / lastMonthWorkers) * 100)
+        : 0;
+
+      const stateTrend = lastMonthStates > 0
+        ? Math.round(((thisMonthStates - lastMonthStates) / lastMonthStates) * 100)
+        : 0;
 
       res.json({
         totalNotices,
         totalWorkers,
         activeStates,
-        recentIncrease: thisMonth,
+        recentIncrease: thisMonthCount,
+        trends: {
+          notices: {
+            value: noticeTrend,
+            isPositive: noticeTrend > 0,
+          },
+          workers: {
+            value: workerTrend,
+            isPositive: workerTrend > 0,
+          },
+          states: {
+            value: stateTrend,
+            isPositive: stateTrend > 0,
+          },
+        },
       });
     } catch (error) {
       console.error("Error fetching stats:", error);
