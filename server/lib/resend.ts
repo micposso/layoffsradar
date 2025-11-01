@@ -40,10 +40,10 @@ export async function getUncachableResendClient() {
 
 export async function sendWelcomeEmail(email: string) {
   try {
-    const { client, fromEmail } = await getUncachableResendClient();
+    const { client } = await getUncachableResendClient();
     
     const { data, error } = await client.emails.send({
-      from: fromEmail,
+      from: 'WARN Layoff Tracker <updates@layoffsradar.com>',
       to: [email],
       subject: 'Welcome to WARN Layoff Tracker',
       html: `
