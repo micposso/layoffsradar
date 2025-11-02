@@ -44,6 +44,12 @@ Preferred communication style: Simple, everyday language.
   - Fully integrated with Resend for personalized welcome emails
   - Users can subscribe with state preference without leaving homepage
   - "More options" link for full subscription page with marketing opt-in
+- **About Page**:
+  - New /about route with comprehensive WARN Act information
+  - Educational content explaining what WARN notices are and how they work
+  - Sections covering compliance requirements, notice recipients, and important dates
+  - Professional card-based layout with icons for visual clarity
+  - Data sources disclosure and legal disclaimer
 
 **CSV Import Feature:**
 - Admin import page at /admin/import for bulk uploading WARN notices

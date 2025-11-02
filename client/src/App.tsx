@@ -10,6 +10,7 @@ import Analytics from "@/pages/Analytics";
 import CompanyDetail from "@/pages/CompanyDetail";
 import AdminImport from "@/pages/AdminImport";
 import Subscribe from "@/pages/Subscribe";
+import About from "@/pages/About";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 import { initGA } from "./lib/analytics";
@@ -26,6 +27,7 @@ function Router() {
       <Route path="/analytics" component={Analytics} />
       <Route path="/company/:companyName" component={CompanyDetail} />
       <Route path="/subscribe" component={Subscribe} />
+      <Route path="/about" component={About} />
       <Route path="/admin/import" component={AdminImport} />
       <Route component={NotFound} />
     </Switch>
