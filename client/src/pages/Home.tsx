@@ -9,7 +9,7 @@ import EmailSignup from "@/components/EmailSignup";
 import RecentCompanies from "@/components/RecentCompanies";
 import NotableLayoffs from "@/components/NotableLayoffs";
 import StatCard from "@/components/StatCard";
-import { FileText, Users, MapPin, Search, Info } from "lucide-react";
+import { Search, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -153,19 +153,16 @@ export default function Home() {
               <StatCard
                 title="Notices"
                 value={stats?.totalNotices || notices.length}
-                icon={FileText}
                 trend={stats?.trends?.notices}
               />
               <StatCard
                 title="Jobs Affected"
                 value={stats?.totalWorkers || notices.reduce((sum, n) => sum + n.workersAffected, 0)}
-                icon={Users}
                 trend={stats?.trends?.workers}
               />
               <StatCard
                 title="States Reporting"
                 value={stats?.activeStates || Object.keys(stateData).length}
-                icon={MapPin}
                 trend={stats?.trends?.states}
               />
             </div>
