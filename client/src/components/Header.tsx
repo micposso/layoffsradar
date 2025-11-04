@@ -33,8 +33,9 @@ export default function Header() {
               <Radio className="w-5 h-5" />
               <span className="absolute w-6 h-6 border-2 rounded-full border-black/20 animate-ping" style={{ animationDuration: '2s' }}></span>
             </div>
-            <span className="hidden text-lg font-semibold sm:inline-block">
-              LayoffsRADAR
+            <span className="hidden text-lg sm:inline-block">
+              <span className="font-bold">Layoffs</span>
+              <span className="font-bold">RADAR</span>
             </span>
           </Link>
 
