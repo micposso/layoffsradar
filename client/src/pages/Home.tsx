@@ -184,7 +184,7 @@ export default function Home() {
                 />
                 <Button
                   onClick={handleSearch}
-                  className="md:w-auto"
+                  className="md:w-auto bg-[#587B7F] text-white hover:bg-[#4d6d71] border border-[#4d6d71]"
                   data-testid="button-search"
                 >
                   <Search className="w-4 h-4 mr-2" />
