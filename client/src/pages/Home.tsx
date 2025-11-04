@@ -138,9 +138,14 @@ export default function Home() {
               <p className="text-lg text-muted-foreground mb-1" data-testid="text-hero-description">
                 Get notifications of layoff notices in real time - stay informed and prepared.
               </p>
-              <p className="text-muted-foreground" data-testid="text-hero-tagline">
+              <p className="text-muted-foreground mb-6" data-testid="text-hero-tagline">
                 Search by company or state and get warnings right into your inbox
               </p>
+            </div>
+
+            {/* Email Subscription Form */}
+            <div className="max-w-2xl mx-auto mb-8">
+              <EmailSignup />
             </div>
 
             {/* Stats Row */}
@@ -191,7 +196,7 @@ export default function Home() {
                   className="md:w-auto"
                   data-testid="button-subscribe-alerts"
                 >
-                  <a href="#subscribe">Subscribe for Alerts</a>
+                  <a href="/subscribe">Subscribe for Alerts</a>
                 </Button>
               </div>
             </div>
@@ -204,15 +209,6 @@ export default function Home() {
                 </p>
               </div>
               <USMap stateData={stateData} />
-            </div>
-          </div>
-        </section>
-
-        {/* Subscribe Section */}
-        <section id="subscribe" className="py-12 bg-muted/30">
-          <div className="container px-4 mx-auto md:px-6 lg:px-8">
-            <div className="max-w-2xl mx-auto">
-              <EmailSignup />
             </div>
           </div>
         </section>
