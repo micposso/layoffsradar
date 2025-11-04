@@ -55,6 +55,11 @@ Preferred communication style: Simple, everyday language.
   - Installed in client/index.html (head and body tags)
   - Enables centralized tracking and analytics management
   - DataLayer available on all pages for event tracking
+- **Legal Pages**:
+  - Privacy Policy page at /privacy with comprehensive data handling policies
+  - Terms of Service page at /terms with usage terms and disclaimers
+  - Both pages linked from footer Legal section
+  - Updated footer branding to LayoffsRADAR
 
 **CSV Import Feature:**
 - Admin import page at /admin/import for bulk uploading WARN notices

@@ -53,17 +53,17 @@ export default function Footer() {
             <h3 className="mb-4 text-sm font-semibold" data-testid="heading-footer-legal">Legal</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
-                <Link href="/" className="transition-colors hover:text-foreground" data-testid="link-privacy">
+                <Link href="/privacy" className="transition-colors hover:text-foreground" data-testid="link-privacy">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/" className="transition-colors hover:text-foreground" data-testid="link-terms">
+                <Link href="/terms" className="transition-colors hover:text-foreground" data-testid="link-terms">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link href="/" className="transition-colors hover:text-foreground" data-testid="link-attribution">
+                <Link href="/about" className="transition-colors hover:text-foreground" data-testid="link-attribution">
                   Data Attribution
                 </Link>
               </li>
@@ -99,7 +99,7 @@ export default function Footer() {
         <div className="pt-8 mt-12 border-t">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <p className="text-sm text-muted-foreground" data-testid="text-copyright">
-              © {currentYear} WARN Tracker. Data sourced from state workforce agencies and the U.S. Department of Labor.
+              © {currentYear} LayoffsRADAR. Data sourced from state workforce agencies and the U.S. Department of Labor.
             </p>
             <p className="text-sm text-muted-foreground" data-testid="text-last-updated">
               Last updated: {new Date().toLocaleDateString()}
