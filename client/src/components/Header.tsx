@@ -30,10 +30,10 @@ export default function Header() {
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2 hover-elevate" data-testid="link-logo">
             <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary text-primary-foreground">
-              <span className="text-lg font-bold">W</span>
+              <span className="text-lg font-bold">L</span>
             </div>
             <span className="hidden text-lg font-semibold sm:inline-block">
-              WARN Tracker
+              LayoffsRADAR
             </span>
           </Link>
 
