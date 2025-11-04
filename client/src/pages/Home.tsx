@@ -201,14 +201,6 @@ export default function Home() {
                   <Search className="w-4 h-4 mr-2" />
                   Search
                 </Button>
-                <Button
-                  variant="secondary"
-                  asChild
-                  className="md:w-auto"
-                  data-testid="button-subscribe-alerts"
-                >
-                  <a href="/subscribe">Subscribe for Alerts</a>
-                </Button>
               </div>
             </div>
 
