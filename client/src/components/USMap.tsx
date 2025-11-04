@@ -4,7 +4,6 @@ import {
   ComposableMap,
   Geographies,
   Geography,
-  ZoomableGroup,
 } from "react-simple-maps";
 
 interface USMapProps {
@@ -56,52 +55,50 @@ export default function USMap({ stateData = {} }: USMapProps) {
         data-testid="map-interactive-us"
         style={{ width: "100%", height: "auto" }}
       >
-        <ZoomableGroup>
-          <Geographies geography={geoUrl}>
-            {({ geographies }: any) =>
-              geographies.map((geo: any) => {
-                const stateName = geo.properties.name;
-                const stateCode = stateAbbreviations[stateName] || "";
-                
-                return (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    fill={getStateFill(stateCode)}
-                    stroke="hsl(var(--background))"
-                    strokeWidth={0.75}
-                    style={{
-                      default: { outline: "none" },
-                      hover: {
-                        fill: getStateFill(stateCode),
-                        filter: "brightness(1.15)",
-                        outline: "none",
-                        cursor: "pointer",
-                      },
-                      pressed: { outline: "none" },
-                    }}
-                    onMouseEnter={(evt: any) => {
-                      setHoveredState(stateCode);
-                      const rect = evt.currentTarget.getBoundingClientRect();
-                      setTooltipContent({
-                        name: stateName,
-                        code: stateCode,
-                        x: rect.left + rect.width / 2,
-                        y: rect.top,
-                      });
-                    }}
-                    onMouseLeave={() => {
-                      setHoveredState(null);
-                      setTooltipContent(null);
-                    }}
-                    onClick={() => handleStateClick(stateCode)}
-                    data-testid={`map-state-${stateCode}`}
-                  />
-                );
-              })
-            }
-          </Geographies>
-        </ZoomableGroup>
+        <Geographies geography={geoUrl}>
+          {({ geographies }: any) =>
+            geographies.map((geo: any) => {
+              const stateName = geo.properties.name;
+              const stateCode = stateAbbreviations[stateName] || "";
+              
+              return (
+                <Geography
+                  key={geo.rsmKey}
+                  geography={geo}
+                  fill={getStateFill(stateCode)}
+                  stroke="hsl(var(--background))"
+                  strokeWidth={0.75}
+                  style={{
+                    default: { outline: "none" },
+                    hover: {
+                      fill: getStateFill(stateCode),
+                      filter: "brightness(1.15)",
+                      outline: "none",
+                      cursor: "pointer",
+                    },
+                    pressed: { outline: "none" },
+                  }}
+                  onMouseEnter={(evt: any) => {
+                    setHoveredState(stateCode);
+                    const rect = evt.currentTarget.getBoundingClientRect();
+                    setTooltipContent({
+                      name: stateName,
+                      code: stateCode,
+                      x: rect.left + rect.width / 2,
+                      y: rect.top,
+                    });
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredState(null);
+                    setTooltipContent(null);
+                  }}
+                  onClick={() => handleStateClick(stateCode)}
+                  data-testid={`map-state-${stateCode}`}
+                />
+              );
+            })
+          }
+        </Geographies>
       </ComposableMap>
 
       {tooltipContent && hoveredState && (
