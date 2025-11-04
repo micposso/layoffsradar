@@ -133,13 +133,13 @@ export default function Home() {
           <div className="container px-4 mx-auto md:px-6 lg:px-8 max-w-7xl">
             <div className="text-center mb-8">
               <h1 className="mb-3 text-4xl font-bold tracking-tight md:text-5xl" data-testid="heading-main">
-                WARN Layoff Tracker
+                Layoffs Warnings and Tracker
               </h1>
               <p className="text-lg text-muted-foreground mb-1" data-testid="text-hero-description">
-                Track layoffs and WARN filings in real time — stay prepared.
+                Get notifications of layoff notices in real time - stay informed and prepared.
               </p>
               <p className="text-muted-foreground" data-testid="text-hero-tagline">
-                Check your company or sign up for alerts.
+                Search by company or state and get warnings right into your inbox
               </p>
             </div>
 
