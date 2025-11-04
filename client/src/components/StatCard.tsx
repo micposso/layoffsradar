@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowUp, ArrowDown, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { ArrowUp, ArrowDown, Minus } from "lucide-react";
 import { useCountUp } from "@/hooks/useCountUp";
 
 interface StatCardProps {
@@ -43,13 +43,8 @@ export default function StatCard({ title, value, description, trend }: StatCardP
             </p>
             {trend && (
               <div className="flex items-center gap-1 mt-2">
-                {trend.isPositive ? (
-                  <TrendingUp className="w-4 h-4 text-destructive" data-testid={`icon-trend-up-${testId}`} />
-                ) : (
-                  <TrendingDown className="w-4 h-4 text-green-600" data-testid={`icon-trend-down-${testId}`} />
-                )}
                 <span 
-                  className={`text-sm font-medium ${trend.isPositive ? 'text-destructive' : 'text-green-600'}`}
+                  className={`text-sm font-medium ${trend.isPositive ? 'text-red-500' : 'text-green-600'}`}
                   data-testid={`text-trend-${testId}`}
                 >
                   {Math.abs(trend.value)}% vs last month
