@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Search, Menu, X, LogOut, User } from "lucide-react";
+import { Search, Menu, X, LogOut, User, Radio } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -29,8 +29,9 @@ export default function Header() {
       <div className="container flex items-center justify-between h-16 px-4 mx-auto md:px-6 lg:px-8">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2 hover-elevate" data-testid="link-logo">
-            <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary text-primary-foreground">
-              <span className="text-lg font-bold">L</span>
+            <div className="relative flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground">
+              <Radio className="w-5 h-5" />
+              <span className="absolute w-6 h-6 border-2 rounded-full border-primary-foreground/30 animate-ping" style={{ animationDuration: '2s' }}></span>
             </div>
             <span className="hidden text-lg font-semibold sm:inline-block">
               LayoffsRADAR
