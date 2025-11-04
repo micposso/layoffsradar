@@ -54,8 +54,8 @@ export default function StatCard({ title, value, icon: Icon, description, trend 
               </p>
             )}
           </div>
-          <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10">
-            <Icon className="w-6 h-6 text-primary" />
+          <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 rounded-lg bg-[#E2C044]">
+            <Icon className="w-6 h-6 text-black" />
           </div>
         </div>
       </CardContent>
