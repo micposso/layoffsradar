@@ -88,6 +88,10 @@ export default function Home() {
     totalWorkers: number;
     activeStates: number;
     recentIncrease: number;
+    comparisonPeriod?: {
+      currentMonth: string;
+      previousMonth: string;
+    };
     trends: {
       notices: { value: number; isPositive: boolean };
       workers: { value: number; isPositive: boolean };
@@ -149,7 +153,7 @@ export default function Home() {
             </div>
 
             {/* Stats Row */}
-            <div className="grid gap-4 mb-8 md:grid-cols-3 max-w-4xl mx-auto">
+            <div className="grid gap-4 mb-2 md:grid-cols-3 max-w-4xl mx-auto">
               <StatCard
                 title="Notices"
                 value={stats?.totalNotices || notices.length}
@@ -166,6 +170,16 @@ export default function Home() {
                 trend={stats?.trends?.states}
               />
             </div>
+            
+            {/* Comparison Period Disclaimer */}
+            {stats?.comparisonPeriod && (
+              <div className="max-w-4xl mx-auto mb-8">
+                <p className="text-xs text-center text-muted-foreground" data-testid="text-comparison-period">
+                  <Info className="inline w-3 h-3 mr-1" />
+                  Trends compare {stats.comparisonPeriod.currentMonth} vs {stats.comparisonPeriod.previousMonth}
+                </p>
+              </div>
+            )}
 
             {/* Search Bar */}
             <div className="max-w-4xl mx-auto mb-8">

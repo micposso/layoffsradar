@@ -189,11 +189,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ? Math.round(((lastCompleteStates - monthBeforeStates) / monthBeforeStates) * 100)
         : 0;
 
+      // Get month names for display
+      const lastCompleteMonthName = lastCompleteMonthStart.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+      const monthBeforeLastName = monthBeforeLastStart.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+
       res.json({
         totalNotices,
         totalWorkers,
         activeStates,
         recentIncrease: lastCompleteCount,
+        comparisonPeriod: {
+          currentMonth: lastCompleteMonthName,
+          previousMonth: monthBeforeLastName,
+        },
         trends: {
           notices: {
             value: noticeTrend,
