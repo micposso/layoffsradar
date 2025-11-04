@@ -206,7 +206,7 @@ export default function EmailSignup() {
           <Button
             type="submit"
             disabled={mutation.isPending}
-            className="w-full"
+            className="w-full bg-[#E2C044] text-black hover:bg-[#d4b33d] border border-[#d4b33d]"
             data-testid="button-subscribe"
           >
             {mutation.isPending ? "Subscribing..." : "Subscribe to Alerts"}
