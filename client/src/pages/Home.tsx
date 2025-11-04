@@ -181,6 +181,16 @@ export default function Home() {
               </div>
             )}
 
+            {/* Map Section */}
+            <div className="max-w-6xl mx-auto mb-8">
+              <div className="text-center mb-4">
+                <p className="text-sm text-muted-foreground" data-testid="text-map-tooltip">
+                  Click a state to explore WARN filings
+                </p>
+              </div>
+              <USMap stateData={stateData} />
+            </div>
+
             {/* Search Bar */}
             <div className="max-w-4xl mx-auto mb-8">
               <div className="flex flex-col gap-3 md:flex-row">
@@ -202,16 +212,6 @@ export default function Home() {
                   Search
                 </Button>
               </div>
-            </div>
-
-            {/* Map Section */}
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-4">
-                <p className="text-sm text-muted-foreground" data-testid="text-map-tooltip">
-                  Click a state to explore WARN filings
-                </p>
-              </div>
-              <USMap stateData={stateData} />
             </div>
           </div>
         </section>
