@@ -35,7 +35,7 @@ export default function Header() {
             </div>
             <span className="hidden text-lg sm:inline-block">
               <span className="font-bold">Layoffs</span>
-              <span className="font-bold">RADAR</span>
+              <span>RADAR</span>
             </span>
           </Link>
 
