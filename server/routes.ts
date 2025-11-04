@@ -147,48 +147,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const uniqueStates = new Set(notices.map(n => n.state));
       const activeStates = uniqueStates.size;
 
-      // Calculate this month's stats
+      // Compare last complete month vs the month before that
       const now = new Date();
-      const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+      
+      // Last complete month (e.g., October if current is November)
+      const lastCompleteMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastCompleteMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+      
+      // Month before last (e.g., September if current is November)
+      const monthBeforeLastStart = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+      const monthBeforeLastEnd = new Date(now.getFullYear(), now.getMonth() - 1, 0);
 
-      const thisMonthNotices = notices.filter(n => {
+      const lastCompleteMonthNotices = notices.filter(n => {
         const date = new Date(n.filingDate);
-        return date >= thisMonthStart;
+        return date >= lastCompleteMonthStart && date <= lastCompleteMonthEnd;
       });
 
-      const lastMonthNotices = notices.filter(n => {
+      const monthBeforeLastNotices = notices.filter(n => {
         const date = new Date(n.filingDate);
-        return date >= lastMonthStart && date <= lastMonthEnd;
+        return date >= monthBeforeLastStart && date <= monthBeforeLastEnd;
       });
 
       // Calculate trends
-      const thisMonthCount = thisMonthNotices.length;
-      const lastMonthCount = lastMonthNotices.length;
-      const thisMonthWorkers = thisMonthNotices.reduce((sum, n) => sum + n.workersAffected, 0);
-      const lastMonthWorkers = lastMonthNotices.reduce((sum, n) => sum + n.workersAffected, 0);
-      const thisMonthStates = new Set(thisMonthNotices.map(n => n.state)).size;
-      const lastMonthStates = new Set(lastMonthNotices.map(n => n.state)).size;
+      const lastCompleteCount = lastCompleteMonthNotices.length;
+      const monthBeforeCount = monthBeforeLastNotices.length;
+      const lastCompleteWorkers = lastCompleteMonthNotices.reduce((sum, n) => sum + n.workersAffected, 0);
+      const monthBeforeWorkers = monthBeforeLastNotices.reduce((sum, n) => sum + n.workersAffected, 0);
+      const lastCompleteStates = new Set(lastCompleteMonthNotices.map(n => n.state)).size;
+      const monthBeforeStates = new Set(monthBeforeLastNotices.map(n => n.state)).size;
 
-      // Calculate percentage changes
-      const noticeTrend = lastMonthCount > 0 
-        ? Math.round(((thisMonthCount - lastMonthCount) / lastMonthCount) * 100)
+      // Calculate percentage changes (last complete month vs month before)
+      const noticeTrend = monthBeforeCount > 0 
+        ? Math.round(((lastCompleteCount - monthBeforeCount) / monthBeforeCount) * 100)
         : 0;
       
-      const workerTrend = lastMonthWorkers > 0
-        ? Math.round(((thisMonthWorkers - lastMonthWorkers) / lastMonthWorkers) * 100)
+      const workerTrend = monthBeforeWorkers > 0
+        ? Math.round(((lastCompleteWorkers - monthBeforeWorkers) / monthBeforeWorkers) * 100)
         : 0;
 
-      const stateTrend = lastMonthStates > 0
-        ? Math.round(((thisMonthStates - lastMonthStates) / lastMonthStates) * 100)
+      const stateTrend = monthBeforeStates > 0
+        ? Math.round(((lastCompleteStates - monthBeforeStates) / monthBeforeStates) * 100)
         : 0;
 
       res.json({
         totalNotices,
         totalWorkers,
         activeStates,
-        recentIncrease: thisMonthCount,
+        recentIncrease: lastCompleteCount,
         trends: {
           notices: {
             value: noticeTrend,

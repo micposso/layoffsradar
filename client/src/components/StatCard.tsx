@@ -47,7 +47,7 @@ export default function StatCard({ title, value, description, trend }: StatCardP
                   className={`text-sm font-medium ${trend.isPositive ? 'text-red-500' : 'text-green-600'}`}
                   data-testid={`text-trend-${testId}`}
                 >
-                  {Math.abs(trend.value)}% vs last month
+                  {Math.abs(trend.value)}% vs previous month
                 </span>
               </div>
             )}
