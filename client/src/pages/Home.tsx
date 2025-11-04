@@ -132,7 +132,7 @@ export default function Home() {
         <section className="py-12 bg-background border-b">
           <div className="container px-4 mx-auto md:px-6 lg:px-8 max-w-7xl">
             <div className="text-center mb-8">
-              <h1 className="mb-3 text-4xl font-bold tracking-tight md:text-5xl" data-testid="heading-main">
+              <h1 className="mb-3 text-4xl font-bold tracking-tight md:text-5xl text-[#000000]" data-testid="heading-main">
                 Layoffs Warnings and Tracker
               </h1>
               <p className="text-lg text-muted-foreground mb-1" data-testid="text-hero-description">
