@@ -146,13 +146,6 @@ export default function EmailSignup() {
 
   return (
     <div className="w-full" id="subscribe">
-      <div className="mb-6 text-center">
-        <h2 className="mb-2 text-2xl font-bold text-foreground">Subscribe for Alerts</h2>
-        <p className="text-muted-foreground">
-          Get email updates about new WARN layoff notices
-        </p>
-      </div>
-      
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
