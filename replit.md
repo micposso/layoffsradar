@@ -60,6 +60,13 @@ Preferred communication style: Simple, everyday language.
   - Terms of Service page at /terms with usage terms and disclaimers
   - Both pages linked from footer Legal section
   - Updated footer branding to LayoffsRADAR
+- **Cookie Consent Banner**:
+  - US-compliant cookie consent banner appears on first visit
+  - Users can accept or dismiss the banner
+  - Consent preference stored in localStorage (never shows again)
+  - Links to Privacy Policy for detailed information
+  - Fixed position at bottom of screen with backdrop blur
+  - Non-blocking (cookies load immediately, as per US law requirements)
 
 **CSV Import Feature:**
 - Admin import page at /admin/import for bulk uploading WARN notices
