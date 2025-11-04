@@ -50,6 +50,11 @@ Preferred communication style: Simple, everyday language.
   - Sections covering compliance requirements, notice recipients, and important dates
   - Professional card-based layout with icons for visual clarity
   - Data sources disclosure and legal disclaimer
+- **Google Tag Manager Integration**:
+  - GTM container ID: GTM-KM9MPF28
+  - Installed in client/index.html (head and body tags)
+  - Enables centralized tracking and analytics management
+  - DataLayer available on all pages for event tracking
 
 **CSV Import Feature:**
 - Admin import page at /admin/import for bulk uploading WARN notices
