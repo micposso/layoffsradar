@@ -23,7 +23,7 @@ export default function StatCard({ title, value, icon: Icon, description, trend 
     : value;
 
   return (
-    <Card data-testid={`card-stat-${testId}`}>
+    <Card className="bg-[#f0f8ff]" data-testid={`card-stat-${testId}`}>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex-1">
