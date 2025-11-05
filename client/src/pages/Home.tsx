@@ -9,7 +9,7 @@ import EmailSignup from "@/components/EmailSignup";
 import RecentCompanies from "@/components/RecentCompanies";
 import NotableLayoffs from "@/components/NotableLayoffs";
 import StatCard from "@/components/StatCard";
-import { FileText, Users, MapPin, Search, Info } from "lucide-react";
+import { Search, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -88,6 +88,10 @@ export default function Home() {
     totalWorkers: number;
     activeStates: number;
     recentIncrease: number;
+    comparisonPeriod?: {
+      currentMonth: string;
+      previousMonth: string;
+    };
     trends: {
       notices: { value: number; isPositive: boolean };
       workers: { value: number; isPositive: boolean };
@@ -132,37 +136,59 @@ export default function Home() {
         <section className="py-12 bg-background border-b">
           <div className="container px-4 mx-auto md:px-6 lg:px-8 max-w-7xl">
             <div className="text-center mb-8">
-              <h1 className="mb-3 text-4xl font-bold tracking-tight md:text-5xl" data-testid="heading-main">
-                WARN Layoff Tracker
+              <h1 className="mb-3 text-4xl font-bold tracking-tight md:text-5xl text-[#000000]" data-testid="heading-main">
+                Layoffs Warnings and Tracker
               </h1>
               <p className="text-lg text-muted-foreground mb-1" data-testid="text-hero-description">
-                Track layoffs and WARN filings in real time — stay prepared.
+                Get notifications of layoff notices in real time - stay informed and prepared.
               </p>
-              <p className="text-muted-foreground" data-testid="text-hero-tagline">
-                Check your company or sign up for alerts.
+              <p className="text-muted-foreground mb-6" data-testid="text-hero-tagline">
+                Search by company or state and get warnings right into your inbox
               </p>
             </div>
 
+            {/* Email Subscription Form */}
+            <div className="max-w-2xl mx-auto mb-8">
+              <EmailSignup />
+            </div>
+
             {/* Stats Row */}
-            <div className="grid gap-4 mb-8 md:grid-cols-3 max-w-4xl mx-auto">
+            <div className="grid gap-4 mb-2 md:grid-cols-3 max-w-4xl mx-auto">
               <StatCard
                 title="Notices"
                 value={stats?.totalNotices || notices.length}
-                icon={FileText}
                 trend={stats?.trends?.notices}
               />
               <StatCard
                 title="Jobs Affected"
                 value={stats?.totalWorkers || notices.reduce((sum, n) => sum + n.workersAffected, 0)}
-                icon={Users}
                 trend={stats?.trends?.workers}
               />
               <StatCard
                 title="States Reporting"
                 value={stats?.activeStates || Object.keys(stateData).length}
-                icon={MapPin}
                 trend={stats?.trends?.states}
               />
+            </div>
+            
+            {/* Comparison Period Disclaimer */}
+            {stats?.comparisonPeriod && (
+              <div className="max-w-4xl mx-auto mb-8">
+                <p className="text-xs text-center text-muted-foreground" data-testid="text-comparison-period">
+                  <Info className="inline w-3 h-3 mr-1" />
+                  Trends compare {stats.comparisonPeriod.currentMonth} vs {stats.comparisonPeriod.previousMonth}
+                </p>
+              </div>
+            )}
+
+            {/* Map Section */}
+            <div className="max-w-6xl mx-auto mb-8">
+              <div className="text-center mb-4">
+                <p className="text-sm text-muted-foreground" data-testid="text-map-tooltip">
+                  Click a state to explore WARN filings
+                </p>
+              </div>
+              <USMap stateData={stateData} />
             </div>
 
             {/* Search Bar */}
@@ -179,40 +205,13 @@ export default function Home() {
                 />
                 <Button
                   onClick={handleSearch}
-                  className="md:w-auto"
+                  className="md:w-auto bg-[#587B7F] text-white hover:bg-[#4d6d71] border border-[#4d6d71]"
                   data-testid="button-search"
                 >
                   <Search className="w-4 h-4 mr-2" />
                   Search
                 </Button>
-                <Button
-                  variant="secondary"
-                  asChild
-                  className="md:w-auto"
-                  data-testid="button-subscribe-alerts"
-                >
-                  <a href="#subscribe">Subscribe for Alerts</a>
-                </Button>
               </div>
-            </div>
-
-            {/* Map Section */}
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-4">
-                <p className="text-sm text-muted-foreground" data-testid="text-map-tooltip">
-                  Click a state to explore WARN filings
-                </p>
-              </div>
-              <USMap stateData={stateData} />
-            </div>
-          </div>
-        </section>
-
-        {/* Subscribe Section */}
-        <section id="subscribe" className="py-12 bg-muted/30">
-          <div className="container px-4 mx-auto md:px-6 lg:px-8">
-            <div className="max-w-2xl mx-auto">
-              <EmailSignup />
             </div>
           </div>
         </section>

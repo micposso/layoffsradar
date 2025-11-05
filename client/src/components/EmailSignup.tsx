@@ -146,13 +146,6 @@ export default function EmailSignup() {
 
   return (
     <div className="w-full" id="subscribe">
-      <div className="mb-6 text-center">
-        <h2 className="mb-2 text-2xl font-bold text-foreground">Subscribe for Alerts</h2>
-        <p className="text-muted-foreground">
-          Get email updates about new WARN layoff notices
-        </p>
-      </div>
-      
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -213,7 +206,7 @@ export default function EmailSignup() {
           <Button
             type="submit"
             disabled={mutation.isPending}
-            className="w-full"
+            className="w-full bg-[#E2C044] text-black hover:bg-[#d4b33d] border border-[#d4b33d]"
             data-testid="button-subscribe"
           >
             {mutation.isPending ? "Subscribing..." : "Subscribe to Alerts"}

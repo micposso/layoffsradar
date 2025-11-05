@@ -1,11 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
+import { ArrowUp, ArrowDown, Minus } from "lucide-react";
 import { useCountUp } from "@/hooks/useCountUp";
 
 interface StatCardProps {
   title: string;
   value: string | number;
-  icon: LucideIcon;
   description?: string;
   trend?: {
     value: number;
@@ -13,7 +12,7 @@ interface StatCardProps {
   };
 }
 
-export default function StatCard({ title, value, icon: Icon, description, trend }: StatCardProps) {
+export default function StatCard({ title, value, description, trend }: StatCardProps) {
   const testId = title.toLowerCase().replace(/\s+/g, "-");
   const numericValue = typeof value === "number" ? value : 0;
   const animatedValue = useCountUp({ end: numericValue, duration: 2000 });
@@ -22,8 +21,17 @@ export default function StatCard({ title, value, icon: Icon, description, trend 
     ? animatedValue.toLocaleString() 
     : value;
 
+  // Determine arrow icon and color based on trend
+  const ArrowIcon = trend 
+    ? (trend.isPositive ? ArrowUp : ArrowDown)
+    : Minus;
+  
+  const arrowBgColor = trend
+    ? (trend.isPositive ? "bg-red-500" : "bg-[#16a34a]")
+    : "bg-gray-400";
+
   return (
-    <Card data-testid={`card-stat-${testId}`}>
+    <Card className="bg-[#f0f8ff]" data-testid={`card-stat-${testId}`}>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex-1">
@@ -35,16 +43,11 @@ export default function StatCard({ title, value, icon: Icon, description, trend 
             </p>
             {trend && (
               <div className="flex items-center gap-1 mt-2">
-                {trend.isPositive ? (
-                  <TrendingUp className="w-4 h-4 text-destructive" data-testid={`icon-trend-up-${testId}`} />
-                ) : (
-                  <TrendingDown className="w-4 h-4 text-green-600" data-testid={`icon-trend-down-${testId}`} />
-                )}
                 <span 
-                  className={`text-sm font-medium ${trend.isPositive ? 'text-destructive' : 'text-green-600'}`}
+                  className={`text-sm font-medium ${trend.isPositive ? 'text-red-500' : 'text-green-600'}`}
                   data-testid={`text-trend-${testId}`}
                 >
-                  {Math.abs(trend.value)}% vs last month
+                  {Math.abs(trend.value)}% vs previous month
                 </span>
               </div>
             )}
@@ -54,8 +57,8 @@ export default function StatCard({ title, value, icon: Icon, description, trend 
               </p>
             )}
           </div>
-          <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10">
-            <Icon className="w-6 h-6 text-primary" />
+          <div className={`flex items-center justify-center flex-shrink-0 w-12 h-12 rounded-lg ${arrowBgColor}`}>
+            <ArrowIcon className="w-6 h-6 text-white" />
           </div>
         </div>
       </CardContent>

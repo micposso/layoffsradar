@@ -38,6 +38,35 @@ Preferred communication style: Simple, everyday language.
   - Database schema extended with state_preference and marketing_opt_in fields
   - Welcome emails now personalize based on state preference
   - Full end-to-end testing completed and passing
+- **Enhanced Homepage Subscribe Section**:
+  - Added state dropdown to homepage subscribe form
+  - Two-column layout with email and state filter fields
+  - Fully integrated with Resend for personalized welcome emails
+  - Users can subscribe with state preference without leaving homepage
+  - "More options" link for full subscription page with marketing opt-in
+- **About Page**:
+  - New /about route with comprehensive WARN Act information
+  - Educational content explaining what WARN notices are and how they work
+  - Sections covering compliance requirements, notice recipients, and important dates
+  - Professional card-based layout with icons for visual clarity
+  - Data sources disclosure and legal disclaimer
+- **Google Tag Manager Integration**:
+  - GTM container ID: GTM-KM9MPF28
+  - Installed in client/index.html (head and body tags)
+  - Enables centralized tracking and analytics management
+  - DataLayer available on all pages for event tracking
+- **Legal Pages**:
+  - Privacy Policy page at /privacy with comprehensive data handling policies
+  - Terms of Service page at /terms with usage terms and disclaimers
+  - Both pages linked from footer Legal section
+  - Updated footer branding to LayoffsRADAR
+- **Cookie Consent Banner**:
+  - US-compliant cookie consent banner appears on first visit
+  - Users can accept or dismiss the banner
+  - Consent preference stored in localStorage (never shows again)
+  - Links to Privacy Policy for detailed information
+  - Fixed position at bottom of screen with backdrop blur
+  - Non-blocking (cookies load immediately, as per US law requirements)
 
 **CSV Import Feature:**
 - Admin import page at /admin/import for bulk uploading WARN notices
